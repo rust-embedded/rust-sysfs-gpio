@@ -41,6 +41,23 @@ pub fn export(pin_num : u64) -> io::Result<Pin> {
     Ok(Pin::new(pin_num))
 }
 
+/// Unexport the GPIO with the provided pin number
+///
+/// This function will unexport the provided by from syfs if
+/// it is currently exported.  If the pin is not currently
+/// exported, it will return without error.  That is, whenever
+/// this function returns Ok, the GPIO is not exported.
+pub fn unexport(pin_num : u64) -> io::Result<()> {
+    match fs::metadata(&format!("/sys/class/gpio/{}", pin_num)) {
+        Ok(_) => {
+            let mut unexport_file = try!(File::create("/sys/class/gpio/unexport"));
+            try!(unexport_file.write_all(format!("{}", pin_num).as_bytes()));
+        },
+        Err(_) => {} // not exported
+    }
+    Ok(())
+}
+
 impl Pin {
     /// Write all of the provided contents to the specified devFile
     fn write_to_device_file(&self, dev_file_name: &str, value: &str) -> io::Result<()> {
