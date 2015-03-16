@@ -74,6 +74,35 @@ The following features are planned for the library:
 - [ ] Support for configuring interrupts on GPIO
 - [ ] Support for polling on GPIO with configured interrupt
 
+Cross Compiling
+---------------
+
+Most likely, the machine you are running on is not your development
+machine (although it could be).  In those cases, you will need to
+cross-compile.  The following basic instructions should work for the
+raspberry pi or beaglebone black:
+
+1. Install rust and cargo
+2. Install an appropriate cross compiler.  On an Ubuntu system, this
+   can be done by doing `sudo apt-get install g++-arm-linux-gnueabihf`.
+3. Build or install rust for your target.  This is necessary in order
+   to have libstd available for your target.  For arm-linux-gnueabihf,
+   you can find binaries at https://github.com/japaric/ruststrap.
+   With this approach or building it yourself, you will need to copy
+   the ${rust}/lib/rustlib/arm-unknown-linux-gnueabihf to your system
+   rust library folder (it is namespaced by triple, so it shouldn't
+   break anything).
+4. Tell cargo how to link by adding the lines below to your
+   ~/.cargo/config file.
+5. Run your build `cargo build --target=arm-unknown-linux-gnueabi`.
+
+The following snippet added to my ~/.cargo/config worked for me:
+
+```
+[target.arm-unknown-linux-gnueabihf]
+linker = "arm-linux-gnueabihf-gcc"
+```
+
 License
 -------
 
