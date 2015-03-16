@@ -102,6 +102,33 @@ The following snippet added to my ~/.cargo/config worked for me:
 linker = "arm-linux-gnueabihf-gcc"
 ```
 
+Running the Example
+-------------------
+
+Cargo supports running examples but does not currently support
+building these examples.  In order to cross-compile the examples using
+cargo, this is what things currently look like:
+
+```
+$ cargo run --target=arm-unknown-linux-gnueabihf --example blinky
+   Compiling sysfs_gpio v0.1.0
+   (file:///home/posborne/Projects/rust-playground/rust-sysfs-gpio)
+        Running
+        `target/arm-unknown-linux-gnueabihf/debug/examples/blinky`
+        target/arm-unknown-linux-gnueabihf/debug/examples/blinky: 1:
+        target/arm-unknown-linux-gnueabihf/debug/examples/blinky:
+        Syntax error: word unexpected (expecting ")")
+        An unknown error occurred
+
+To learn more, run the command again with --verbose.
+$ scp target/arm-unknown-linux-gnueabihf/debug/examples/blinky ...
+```
+
+Basically, the run part of the process will fail, but the
+cross-compiled example is still available and can be copied over to be
+run on your target.  Hopefully something like `cargo build --example
+<ex>` is added to cargo in the future.
+
 License
 -------
 
