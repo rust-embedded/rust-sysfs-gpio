@@ -64,11 +64,11 @@ Features
 
 The following features are planned for the library:
 
-- [ ] Support for exporting a GPIO
-- [ ] Support for unexporting a GPIO
-- [ ] Support for setting the direction of a GPIO (in/out)
-- [ ] Support for reading the value of a GPIO input
-- [ ] Support for writing the value of a GPIO output
+- [x] Support for exporting a GPIO
+- [x] Support for unexporting a GPIO
+- [x] Support for setting the direction of a GPIO (in/out)
+- [x] Support for reading the value of a GPIO input
+- [x] Support for writing the value of a GPIO output
 - [ ] Support for configuring whether a pin is active low/high
 - [ ] Support for configuring interrupts on GPIO
 - [ ] Support for polling on GPIO with configured interrupt
