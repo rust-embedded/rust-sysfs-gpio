@@ -19,7 +19,7 @@ pub struct Pin {
 }
 
 #[derive(Copy,Debug)]
-pub enum Direction {In, Out}
+pub enum Direction {In, Out, High, Low}
 
 #[derive(Copy,Debug)]
 pub enum Edge {NoInterrupt, RisingEdge, FallingEdge, BothEdges}
@@ -54,10 +54,24 @@ impl Pin {
     }
 
     /// Set this GPIO as either an input or an output
+    ///
+    /// The basic values allowed here are `Direction::In` and
+    /// `Direction::Out` which set the Pin as either an input
+    /// or output respectively.  In addition to those, two
+    /// additional settings of `Direction::High` and
+    /// `Direction::Low`.  These both set the Pin as an output
+    /// but do so with an initial value of high or low respectively.
+    /// This allows for glitch-free operation.
+    ///
+    /// Note that this entry may not exist if the kernel does
+    /// not support changing the direction of a pin in userspace.  If
+    /// this is the case, you will get an error.
     pub fn set_direction(&self, dir : Direction) -> io::Result<()> {
         self.write_to_device_file("direction", match dir {
             Direction::In => "in",
             Direction::Out => "out",
+            Direction::High => "high",
+            Direction::Low => "low",
         })
     }
 
