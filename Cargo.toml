@@ -12,3 +12,8 @@ Includes a low-level interface as well as a higher-level
 and more managed interface for reading, writing, and
 polling on GPIO interrupts
 """
+
+[[bin]]
+
+name = "blinky-test"
+path = "src/blinky-test.rs"

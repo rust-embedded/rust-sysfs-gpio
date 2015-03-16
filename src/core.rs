@@ -30,7 +30,7 @@ pub enum Edge {NoInterrupt, RisingEdge, FallingEdge, BothEdges}
 /// the exception that the case where the GPIO is already exported
 /// is not an error.
 pub fn export(pin_num : u64) -> io::Result<Pin> {
-    let mut export_file = try!(File::open("/sys/class/gpio/export"));
+    let mut export_file = try!(File::create("/sys/class/gpio/export"));
     try!(export_file.write_all(format!("{}", pin_num).as_bytes()));
     Ok(Pin::new(pin_num))
 }
@@ -38,7 +38,7 @@ pub fn export(pin_num : u64) -> io::Result<Pin> {
 impl Pin {
     /// Write all of the provided contents to the specified devFile
     fn write_to_device_file(&self, dev_file_name: &str, value: &str) -> io::Result<()> {
-        let mut dev_file = try!(File::open(&format!("/sys/class/gpios/gpio{}/{}", self.pin_num, dev_file_name)));
+        let mut dev_file = try!(File::create(&format!("/sys/class/gpio/gpio{}/{}", self.pin_num, dev_file_name)));
         try!(dev_file.write_all(value.as_bytes()));
         Ok(())
     }
@@ -56,19 +56,28 @@ impl Pin {
     /// Set this GPIO as either an input or an output
     pub fn set_direction(&self, dir : Direction) -> io::Result<()> {
         self.write_to_device_file("direction", match dir {
-            Direction::In => "input",
-            Direction::Out => "output",
+            Direction::In => "in",
+            Direction::Out => "out",
         })
     }
 
     /// Get the value of the GPIO (0 or 1)
     pub fn get_value(&self) -> io::Result<u8> {
-        let mut dev_file = try!(File::open(&format!("/sys/class/gpios/gpio{}/value", self.pin_num)));
+        let mut dev_file = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", self.pin_num)));
         let mut s = String::with_capacity(10);
         try!(dev_file.read_to_string(&mut s));
         match s.parse::<u8>() {
             Ok(n) => Ok(n),
             Err(_) => Err(Error::new(ErrorKind::Other, "Unexpected Error", None)),
         }
+    }
+
+    pub fn set_value(&self, value : u8) -> io::Result<()> {
+        let val = if value == 0 {
+            "0"
+        } else {
+            "1"
+        };
+        self.write_to_device_file("value", val)
     }
 }

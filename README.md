@@ -16,23 +16,32 @@ The follow example shows the low-level API.  This API maps directly to
 the functionality provided by the sysfs GPIO interface.
 
 ```rust
-extern crate gpio;
+#![feature(io)]
+#![feature(old_io)]
+#![feature(std_misc)]
+
+extern crate sysfs_gpio;
 
 use sysfs_gpio::core as gpio;
-use std::sys::unix::timer::Timer;
+use std::time::Duration;
+use std::old_io::Timer;
+use std::io;
 
 // export a GPIO for use.  This will not fail
 // if already exported
-fn blink_my_led(u64 duration_ms, u64 period_ms) -> GPIOResult {
-    let my_led = try!(gpio::export(21));
-    try!(my_led.set_direction(gpio::Direction::Output));
-    let timer = try!(Timer::new());
+fn blink_my_led(led : u64, duration_ms : i64, period_ms : i64) -> io::Result<()> {
+    let my_led = try!(gpio::export(led));
+    try!(my_led.set_direction(gpio::Direction::Out));
+    let mut tmr = match Timer::new() {
+        Ok(tmr) => tmr,
+        Err(_) => panic!("Could not create timer!"),
+    };
     let iterations = duration_ms / period_ms / 2;
-    for _ in 0.. {
+    for _ in 0..iterations {
         try!(my_led.set_value(0));
-        timer.sleep(200); // ms
+        tmr.sleep(Duration::milliseconds(period_ms)); // ms
         try!(my_led.set_value(1));
-        timer.sleep(200); // ms
+        tmr.sleep(Duration::milliseconds(period_ms)); // ms
     }
 
     // NOTE: we do not unexport here.  Handling the
@@ -42,10 +51,13 @@ fn blink_my_led(u64 duration_ms, u64 period_ms) -> GPIOResult {
     return Ok(());
 }
 
-match blink_my_led(5000, 200) {
-    Ok(()) => println!("Blinking Complete!"),
-    Err(err) => println!("I have a blinking problem! {:?}");
+fn main() {
+    match blink_my_led(66, 5000, 200) {
+        Ok(()) => println!("Blinking Complete!"),
+        Err(err) => println!("I have a blinking problem! {:?}", err),
+    }
 }
+
 ```
 
 Features
