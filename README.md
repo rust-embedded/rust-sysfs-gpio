@@ -16,13 +16,14 @@ The follow example shows the low-level API.  This API maps directly to
 the functionality provided by the sysfs GPIO interface.
 
 ```rust
-#![feature(io)]
 #![feature(old_io)]
+#![feature(io)]
 #![feature(std_misc)]
+#![allow(deprecated)] // old_io Timer replacement not stable
 
 extern crate sysfs_gpio;
 
-use sysfs_gpio::core as gpio;
+use sysfs_gpio::core::{Direction, Pin};
 use std::time::Duration;
 use std::old_io::Timer;
 use std::io;
@@ -30,8 +31,9 @@ use std::io;
 // export a GPIO for use.  This will not fail
 // if already exported
 fn blink_my_led(led : u64, duration_ms : i64, period_ms : i64) -> io::Result<()> {
-    let my_led = try!(gpio::export(led));
-    try!(my_led.set_direction(gpio::Direction::Out));
+    let my_led = Pin::new(led);
+    try!(my_led.export());
+    try!(my_led.set_direction(Direction::Low));
     let mut tmr = match Timer::new() {
         Ok(tmr) => tmr,
         Err(_) => panic!("Could not create timer!"),
@@ -43,11 +45,8 @@ fn blink_my_led(led : u64, duration_ms : i64, period_ms : i64) -> io::Result<()>
         try!(my_led.set_value(1));
         tmr.sleep(Duration::milliseconds(period_ms)); // ms
     }
-
-    // NOTE: we do not unexport here.  Handling the
-    // error case is tricky and means we cannot
-    // use try!.  This is where the higher-level
-    // API can work out nicely.
+    try!(my_led.set_value(0)); // end with led off
+    try!(my_led.unexport());
     return Ok(());
 }
 
