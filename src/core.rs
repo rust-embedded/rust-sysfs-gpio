@@ -12,7 +12,8 @@
 use std::io::prelude::*;
 use std::io;
 use std::io::{Error, ErrorKind};
-use std::fs::File;
+use std::fs;
+use std::fs::{File};
 
 pub struct Pin {
     pin_num : u64,
@@ -30,15 +31,21 @@ pub enum Edge {NoInterrupt, RisingEdge, FallingEdge, BothEdges}
 /// the exception that the case where the GPIO is already exported
 /// is not an error.
 pub fn export(pin_num : u64) -> io::Result<Pin> {
-    let mut export_file = try!(File::create("/sys/class/gpio/export"));
-    try!(export_file.write_all(format!("{}", pin_num).as_bytes()));
+    match fs::metadata(&format!("/sys/class/gpio/gpio{}", pin_num)) {
+        Ok(_) => {},
+        Err(_) => {
+            let mut export_file = try!(File::create("/sys/class/gpio/export"));
+            try!(export_file.write_all(format!("{}", pin_num).as_bytes()));
+        }
+    };
     Ok(Pin::new(pin_num))
 }
 
 impl Pin {
     /// Write all of the provided contents to the specified devFile
     fn write_to_device_file(&self, dev_file_name: &str, value: &str) -> io::Result<()> {
-        let mut dev_file = try!(File::create(&format!("/sys/class/gpio/gpio{}/{}", self.pin_num, dev_file_name)));
+        let gpio_path = format!("/sys/class/gpio/gpio{}/{}", self.pin_num, dev_file_name);
+        let mut dev_file = try!(File::create(&gpio_path));
         try!(dev_file.write_all(value.as_bytes()));
         Ok(())
     }
@@ -75,7 +82,12 @@ impl Pin {
         })
     }
 
-    /// Get the value of the GPIO (0 or 1)
+    /// Get the value of the Pin (0 or 1)
+    ///
+    /// If successful, 1 will be returned if the pin is high
+    /// and 0 will be returned if the pin is low (this may or may
+    /// not match the signal level of the actual signal depending
+    /// on the GPIO "active_low" entry).
     pub fn get_value(&self) -> io::Result<u8> {
         let mut dev_file = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", self.pin_num)));
         let mut s = String::with_capacity(10);
@@ -86,6 +98,11 @@ impl Pin {
         }
     }
 
+    /// Set the value of the Pin
+    ///
+    /// This will set the value of the pin either high or low.
+    /// A 0 value will set the pin low and any other value will
+    /// set the pin high (1 is typical).
     pub fn set_value(&self, value : u8) -> io::Result<()> {
         let val = if value == 0 {
             "0"

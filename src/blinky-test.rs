@@ -6,9 +6,9 @@
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![feature(io)]
 #![feature(old_io)]
 #![feature(std_misc)]
+#![allow(deprecated)] // old_io Timer replacement not stable
 
 extern crate sysfs_gpio;
 
