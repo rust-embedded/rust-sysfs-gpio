@@ -25,6 +25,14 @@ pub enum Direction {In, Out, High, Low}
 #[derive(Copy,Debug)]
 pub enum Edge {NoInterrupt, RisingEdge, FallingEdge, BothEdges}
 
+#[macro_export]
+macro_rules! try_unexport {
+    ($gpio:ident, $e:expr) => (match $e {
+        Ok(res) => res,
+        Err(e) => { try!($gpio.unexport()); return Err(e) },
+    });
+}
+
 impl Pin {
     /// Write all of the provided contents to the specified devFile
     fn write_to_device_file(&self, dev_file_name: &str, value: &str) -> io::Result<()> {
