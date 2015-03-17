@@ -118,7 +118,7 @@ impl Pin {
         let mut dev_file = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", self.pin_num)));
         let mut s = String::with_capacity(10);
         try!(dev_file.read_to_string(&mut s));
-        match s.parse::<u8>() {
+        match s[..1].parse::<u8>() {
             Ok(n) => Ok(n),
             Err(_) => Err(Error::new(ErrorKind::Other, "Unexpected Error", None)),
         }
