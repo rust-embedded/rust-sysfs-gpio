@@ -39,8 +39,6 @@ fn blink_my_led(led : u64, duration_ms : i64, period_ms : i64) -> io::Result<()>
         Err(_) => panic!("Could not create timer!"),
     };
     let iterations = duration_ms / period_ms / 2;
-    println!("./blinky {} {} {}", led, duration_ms, period_ms);
-    println!("Iterations: {}", iterations);
     for _ in 0..iterations {
         try_unexport!(my_led, my_led.set_value(0));
         tmr.sleep(Duration::milliseconds(period_ms));
