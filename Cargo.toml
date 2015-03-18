@@ -6,6 +6,7 @@ authors = ["Paul Osborne <osbpau@gmail.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/posborne/rust-sysfs-gpio"
 homepage = "https://github.com/posborne/rust-sysfs-gpio"
+documentation = "http://posborne.github.io/rust-sysfs-gpio/"
 description = """
 Provides access to the Linux sysfs interface to GPIOs.
 Includes a low-level interface as well as a higher-level

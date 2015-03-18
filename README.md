@@ -3,6 +3,8 @@ rust-sysfs-gpio
 
 [![Build Status](https://travis-ci.org/posborne/rust-sysfs-gpio.svg)](https://travis-ci.org/posborne/rust-sysfs-gpio)
 
+[Documentation](http://posborne.github.io/rust-sysfs-gpio/)
+
 rust-sysfs-gpio is a rust library/crate providing access to the Linux
 sysfs GPIO interface (https://www.kernel.org/doc/Documentation).  It
 seeks to provide an API that is safe, convenient, and efficient.
