@@ -1,0 +1,12 @@
+language: rust
+script:
+  - cargo build --verbose
+  - cargo test --verbose
+  - cargo doc
+
+# Publish documentation on successfull master build
+# using the ghp-import python package
+after_success: ! '[ $TRAVIS_BRANCH = master ] && [ $TRAVIS_PULL_REQUEST = false ]
+  && echo sudo pip install ghp-import
+  && ghp-import -n target/doc
+  && git push -fq https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages'
