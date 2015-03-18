@@ -1,4 +1,9 @@
 language: rust
+
+env:
+  global:
+    - secure: "KqhgPk6Hy0m37r27fy5ai5DxWN+XP72Zz/oWqWqpIQowIIPI2X0FvmEUEflWim++8KB6CD3l5e61ZpO+Cyp+K1JQBplyVPYvJeLV+2CGeRCcaIgjBx2hkJtI3J9pnyr4hbY5DUL0AodgxuOke7t7i9fZz9X6K9fWjco7sn2mfz4="
+
 script:
   - cargo build --verbose
   - cargo test --verbose
