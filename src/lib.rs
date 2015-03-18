@@ -25,7 +25,7 @@
 ///! the pins in use are unexported upon completion looks like
 ///! the follwoing:
 ///!
-///! ```rust
+///! ```rust,ignore
 ///! extern crate sysfs_gpio;
 ///! use sysfs_gpio::Pin;
 ///!
@@ -91,7 +91,7 @@ impl Pin {
     ///    be exported by use in userspace
     ///
     /// # Example
-    /// ```rust
+    /// ```rust,ignore
     /// use sysfs_gpio::Pin;
     ///
     /// gpio = Pin::new(24);
