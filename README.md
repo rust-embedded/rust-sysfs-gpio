@@ -12,7 +12,7 @@ API for providing access to these GPIOs is via sysfs.
 Example/API
 -----------
 
-The follow example shows the low-level API.  This API maps directly to
+The followin example shows basic API.  This API maps directly to
 the functionality provided by the sysfs GPIO interface.
 
 ```rust
@@ -24,7 +24,7 @@ the functionality provided by the sysfs GPIO interface.
 #[macro_use]
 extern crate sysfs_gpio;
 
-use sysfs_gpio::core::{Direction, Pin};
+use sysfs_gpio::{Direction, Pin};
 use std::time::Duration;
 use std::old_io::Timer;
 use std::io;

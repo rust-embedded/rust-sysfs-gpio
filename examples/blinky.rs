@@ -15,7 +15,7 @@
 #[macro_use]
 extern crate sysfs_gpio;
 
-use sysfs_gpio::core::{Direction, Pin};
+use sysfs_gpio::{Direction, Pin};
 use std::time::Duration;
 use std::old_io::Timer;
 use std::io;
