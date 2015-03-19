@@ -118,7 +118,7 @@ impl Pin {
     /// exported, it will return without error.  That is, whenever
     /// this function returns Ok, the GPIO is not exported.
     pub fn unexport(&self) -> io::Result<()> {
-        match fs::metadata(&format!("/sys/class/gpio/{}", self.pin_num)) {
+        match fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
             Ok(_) => {
                 let mut unexport_file = try!(File::create("/sys/class/gpio/unexport"));
                 try!(unexport_file.write_all(format!("{}", self.pin_num).as_bytes()));
