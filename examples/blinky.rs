@@ -31,23 +31,19 @@ struct Arguments {
 // if already exported
 fn blink_my_led(led : u64, duration_ms : i64, period_ms : i64) -> io::Result<()> {
     let my_led = Pin::new(led);
-
-    try!(my_led.export());
-    try_unexport!(my_led, my_led.set_direction(Direction::Low));
-    let mut tmr = match Timer::new() {
-        Ok(tmr) => tmr,
-        Err(_) => panic!("Could not create timer!"),
-    };
-    let iterations = duration_ms / period_ms / 2;
-    for _ in 0..iterations {
-        try_unexport!(my_led, my_led.set_value(0));
-        tmr.sleep(Duration::milliseconds(period_ms));
-        try_unexport!(my_led, my_led.set_value(1));
-        tmr.sleep(Duration::milliseconds(period_ms));
-    }
-    try_unexport!(my_led, my_led.set_value(0));
-    try!(my_led.unexport());
-    return Ok(());
+    my_led.with_exported(|| {
+        try!(my_led.set_direction(Direction::Low));
+        let mut tmr = Timer::new().unwrap();
+        let iterations = duration_ms / period_ms / 2;
+        for _ in 0..iterations {
+            try!(my_led.set_value(0));
+            tmr.sleep(Duration::milliseconds(period_ms));
+            try!(my_led.set_value(1));
+            tmr.sleep(Duration::milliseconds(period_ms));
+        }
+        try!(my_led.set_value(0));
+        Ok(())
+    })
 }
 
 fn print_usage() {

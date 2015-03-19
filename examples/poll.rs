@@ -12,7 +12,6 @@
 #![feature(std_misc)]
 #![allow(deprecated)] // old_io Timer replacement not stable
 
-#[macro_use]
 extern crate sysfs_gpio;
 
 use sysfs_gpio::{Direction, Pin};
@@ -22,20 +21,27 @@ use std::io;
 use std::os;
 
 fn poll(pin_num : u64) -> io::Result<()> {
+    // NOTE: this currently runs forever and as such if
+    // the app is stopped (Ctrl-C), no cleanup will happen
+    // and the GPIO will be left exported.  Not much
+    // can be done about this as Rust signal handling isn't
+    // really present at the moment.  Revisit later.
     let input = Pin::new(pin_num);
-    try!(input.export());
-    try_unexport!(input, input.set_direction(Direction::In));
-    let mut timer = Timer::new().unwrap();
-    let mut prev_val : u8 = 255;
-    loop {
-        let val = try!(input.get_value());
-        if val != prev_val {
-            println!("Pin State: {}",
-                     if val == 0 { "Low" } else { "High" });
-            prev_val = val;
+    input.with_exported(|| {
+        try!(input.set_direction(Direction::In));
+        let mut timer = Timer::new().unwrap();
+        let mut prev_val : u8 = 255;
+        loop {
+            let val = try!(input.get_value());
+            if val != prev_val {
+                println!("Pin State: {}",
+                         if val == 0 { "Low" } else { "High" });
+                prev_val = val;
+            }
+            timer.sleep(Duration::milliseconds(10));
         }
-        timer.sleep(Duration::milliseconds(10));
-    }
+        Ok(())
+    })
 }
 
 fn main() {

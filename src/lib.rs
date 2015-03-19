@@ -67,11 +67,36 @@ impl Pin {
     
     /// Create a new Pin with the provided `pin_num`
     ///
-    /// This function does not export the provided pin_num.  If that
-    /// functionality is desired, `export` should be used instead.
+    /// This function does not export the provided pin_num.
     pub fn new(pin_num : u64) -> Pin {
         Pin {
             pin_num: pin_num,
+        }
+    }
+
+    /// Run a closure with the GPIO exported
+    ///
+    /// Prior to the provided closure being executed, the Gpio
+    /// will be eported.  After the closure execution is complete,
+    /// the Gpio will be unexported.
+    ///
+    /// # Example
+    ///
+    /// ```rust,ignore
+    /// gpio = Pin::new(24);
+    /// let res = gpio::with_exported(|| {
+    ///     println!("At this point, the Pin is exported");
+    ///     try!(gpio.set_direction(Direction::Low));
+    ///     try!(gpio.set_value(1));
+    ///     // ...
+    /// };
+    /// ```
+    #[inline]
+    pub fn with_exported<F: FnOnce() -> io::Result<()>>(&self, closure : F) -> io::Result<()> {
+        try!(self.export());
+        match closure() {
+            Ok(()) => { try!(self.unexport()); Ok(()) },
+            Err(err) => { try!(self.unexport()); Err(err) },
         }
     }
 
