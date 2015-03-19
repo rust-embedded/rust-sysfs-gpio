@@ -2,7 +2,7 @@
 
 ## [Unreleased][unreleased]
 
-## 0.2.0 - 2015-03-19
+## [0.2.0] - 2015-03-19
 
 ### Changed
 - The `core` module has been removed in favor of putting all
