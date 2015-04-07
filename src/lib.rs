@@ -203,4 +203,35 @@ impl Pin {
         };
         self.write_to_device_file("value", val)
     }
+
+    /// Set the edge on which this GPIO will trigger when polled
+    ///
+    /// The configured edge determines what changes to the Pin will
+    /// result in `poll()` returning.  This call will return an Error
+    /// if the pin does not allow interrupts.
+    pub fn set_edge(&self, edge: Edge) -> io::Result<()> {
+        self.write_to_device_file("edge", match edge {
+            Edge::NoInterrupt => "none",
+            Edge::RisingEdge => "rising",
+            Edge::FallingEdge => "falling",
+            Edge::BothEdges => "both",
+        })
+    }
+
+    /// Get the currently configured edge for this pin
+    ///
+    /// This value will only be present if the Pin allows
+    /// for interrupts.
+    pub fn get_edge(&self) -> io::Result<Edge> {
+        let mut dev_file = try!(File::open(&format!("/sys/class/gpio/gpio{}/edge", self.pin_num)));
+        let mut s = String::with_capacity(10);
+        try!(dev_file.read_to_string(&mut s));
+        match s.trim() {
+            "none" => Ok(Edge::NoInterrupt),
+            "rising" => Ok(Edge::RisingEdge),
+            "falling" => Ok(Edge::FallingEdge),
+            "both" => Ok(Edge::BothEdges),
+            other => Err(Error::new(ErrorKind::Other, format!("Unexpected edge file contents {}", other))),
+        }
+    }
 }
