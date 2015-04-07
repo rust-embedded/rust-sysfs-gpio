@@ -7,10 +7,8 @@
 // except according to those terms.
 
 #![feature(old_io)]
-#![feature(io)]
-#![feature(os)]
 #![feature(std_misc)]
-#![allow(deprecated)] // old_io Timer replacement not stable
+#![allow(deprecated)]
 
 #[macro_use]
 extern crate sysfs_gpio;
@@ -19,7 +17,7 @@ use sysfs_gpio::{Direction, Pin};
 use std::time::Duration;
 use std::old_io::Timer;
 use std::io;
-use std::os;
+use std::env;
 
 struct Arguments {
     pin : u64,
@@ -51,7 +49,7 @@ fn print_usage() {
 }
 
 fn get_args() -> Option<Arguments> {
-    let args = os::args();
+    let args: Vec<String> = env::args().collect();
     if args.len() != 4 { return None; }
     let pin = match args[1].parse::<u64>() { Ok(pin) => pin, Err(_) => return None, };
     let duration_ms = match args[2].parse::<i64>() { Ok(ms) => ms, Err(_) => return None, };

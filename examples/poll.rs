@@ -7,10 +7,8 @@
 // except according to those terms.
 
 #![feature(old_io)]
-#![feature(io)]
-#![feature(os)]
 #![feature(std_misc)]
-#![allow(deprecated)] // old_io Timer replacement not stable
+#![allow(deprecated)]
 
 extern crate sysfs_gpio;
 
@@ -18,7 +16,7 @@ use sysfs_gpio::{Direction, Pin};
 use std::time::Duration;
 use std::old_io::Timer;
 use std::io;
-use std::os;
+use std::env;
 
 fn poll(pin_num : u64) -> io::Result<()> {
     // NOTE: this currently runs forever and as such if
@@ -40,12 +38,11 @@ fn poll(pin_num : u64) -> io::Result<()> {
             }
             timer.sleep(Duration::milliseconds(10));
         }
-        Ok(())
     })
 }
 
 fn main() {
-    let args = os::args();
+    let args: Vec<String> = env::args().collect();
     if args.len() != 2 {
         println!("Usage: ./poll <pin>");
     } else {
