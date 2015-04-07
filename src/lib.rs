@@ -11,7 +11,6 @@
 
 #![crate_type = "lib"]
 #![crate_name = "sysfs_gpio"]
-#![feature(io)]
 
 ///! GPIO access under Linux using the GPIO sysfs interface
 ///!
@@ -42,10 +41,10 @@ pub struct Pin {
     pin_num : u64,
 }
 
-#[derive(Copy,Debug)]
+#[derive(Clone,Debug)]
 pub enum Direction {In, Out, High, Low}
 
-#[derive(Copy,Debug)]
+#[derive(Clone,Debug)]
 pub enum Edge {NoInterrupt, RisingEdge, FallingEdge, BothEdges}
 
 #[macro_export]
@@ -187,7 +186,7 @@ impl Pin {
         try!(dev_file.read_to_string(&mut s));
         match s[..1].parse::<u8>() {
             Ok(n) => Ok(n),
-            Err(_) => Err(Error::new(ErrorKind::Other, "Unexpected Error", None)),
+            Err(_) => Err(Error::new(ErrorKind::Other, "Unexpected Error")),
         }
     }
 
