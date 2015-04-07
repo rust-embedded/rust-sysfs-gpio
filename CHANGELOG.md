@@ -2,6 +2,14 @@
 
 ## [Unreleased][unreleased]
 
+## [0.2.1] - 2015-04-06
+
+### Fixed
+
+- Library updated to work with latest nightlies (~1.0.0 beta).  Due to
+  std situation, still need to depend on a few deprecated features for
+  the examples (synchronous timers).
+
 ## [0.2.0] - 2015-03-19
 
 ### Changed
@@ -35,7 +43,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.0...HEAD
+[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.1...HEAD
+[0.2.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.1.1...0.2.0
 [0.1.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/posborne/rust-sysfs-gpio/compare/33b28ae3115d91ae6612245e5b8d8c636dcdb69c...0.1.0
