@@ -2,6 +2,18 @@
 
 ## [Unreleased][unreleased]
 
+## [0.3.0] - 2015-04-20
+
+### Fixed
+
+- Updates to work with latest rust nightlies
+
+### Added
+
+- Support for interrupts on pins was added via epoll.  This is an
+  efficient and performant way to wait for a pin to change state
+  before performing some operation.
+
 ## [0.2.1] - 2015-04-06
 
 ### Fixed
@@ -43,7 +55,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.1...HEAD
+[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.1.1...0.2.0
 [0.1.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.1.0...0.1.1
