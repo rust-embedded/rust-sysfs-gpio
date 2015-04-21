@@ -6,17 +6,12 @@
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![feature(old_io)]
-#![feature(std_misc)]
-#![allow(deprecated)]
-
 extern crate sysfs_gpio;
 
 use sysfs_gpio::{Direction, Pin};
-use std::time::Duration;
-use std::old_io::Timer;
 use std::io;
 use std::env;
+use std::thread::sleep_ms;
 
 fn poll(pin_num : u64) -> io::Result<()> {
     // NOTE: this currently runs forever and as such if
@@ -27,7 +22,6 @@ fn poll(pin_num : u64) -> io::Result<()> {
     let input = Pin::new(pin_num);
     input.with_exported(|| {
         try!(input.set_direction(Direction::In));
-        let mut timer = Timer::new().unwrap();
         let mut prev_val : u8 = 255;
         loop {
             let val = try!(input.get_value());
@@ -36,7 +30,7 @@ fn poll(pin_num : u64) -> io::Result<()> {
                          if val == 0 { "Low" } else { "High" });
                 prev_val = val;
             }
-            timer.sleep(Duration::milliseconds(10));
+            sleep_ms(10);
         }
     })
 }

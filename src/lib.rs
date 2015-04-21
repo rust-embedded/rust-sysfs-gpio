@@ -31,9 +31,16 @@
 ///! 
 ///! ```
 
+extern crate nix;
+
+use nix::sys::epoll::*;
+use nix::fcntl::Fd;
+use nix::unistd::close;
+
 use std::io::prelude::*;
+use std::os::unix::prelude::*;
 use std::io;
-use std::io::{Error, ErrorKind};
+use std::io::{Error, ErrorKind, SeekFrom};
 use std::fs;
 use std::fs::{File};
 
@@ -53,6 +60,44 @@ macro_rules! try_unexport {
         Ok(res) => res,
         Err(e) => { try!($gpio.unexport()); return Err(e) },
     });
+}
+
+pub fn from_nix_error(err: ::nix::Error) -> io::Error {
+    // taken from mio::io, line 178
+    use std::mem;
+
+    // TODO: Remove insane hacks once `std::io::Error::from_os_error` lands
+    //       rust-lang/rust#24028
+    #[allow(dead_code)]
+    enum Repr {
+        Os(i32),
+        Custom(*const ()),
+    }
+
+    unsafe {
+        mem::transmute(Repr::Os(err.errno() as i32))
+    }
+}
+
+/// Flush up to max bytes from the provided files input buffer
+///
+/// Typically, one would just use seek() for this sort of thing,
+/// but for certain files (e.g. in sysfs), you need to actually
+/// read it.
+fn flush_input_from_file(dev_file: &mut File, max : usize) -> io::Result<usize> {
+    let mut s = String::with_capacity(max);
+    dev_file.read_to_string(&mut s)
+}
+
+/// Get the pin value from the provided file
+fn get_value_from_file(dev_file: &mut File) -> io::Result<u8> {
+    let mut s = String::with_capacity(10);
+    try!(dev_file.seek(SeekFrom::Start(0)));
+    try!(dev_file.read_to_string(&mut s));
+    match s[..1].parse::<u8>() {
+        Ok(n) => Ok(n),
+        Err(_) => Err(Error::new(ErrorKind::Other, "Unexpected Error")),
+    }
 }
 
 impl Pin {
@@ -182,12 +227,7 @@ impl Pin {
     /// on the GPIO "active_low" entry).
     pub fn get_value(&self) -> io::Result<u8> {
         let mut dev_file = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", self.pin_num)));
-        let mut s = String::with_capacity(10);
-        try!(dev_file.read_to_string(&mut s));
-        match s[..1].parse::<u8>() {
-            Ok(n) => Ok(n),
-            Err(_) => Err(Error::new(ErrorKind::Other, "Unexpected Error")),
-        }
+        get_value_from_file(&mut dev_file)
     }
 
     /// Set the value of the Pin
@@ -233,5 +273,95 @@ impl Pin {
             "both" => Ok(Edge::BothEdges),
             other => Err(Error::new(ErrorKind::Other, format!("Unexpected edge file contents {}", other))),
         }
+    }
+
+    /// Get a PinPoller object for this pin
+    ///
+    /// This pin poller object will register an interrupt with the
+    /// kernel and allow you to poll() on it and receive notifications
+    /// that an interrupt has occured with minimal delay.
+    pub fn get_poller(&self) -> io::Result<PinPoller> {
+        PinPoller::new(self.pin_num)
+    }
+}
+
+pub struct PinPoller {
+    pin_num : u64,
+    epoll_fd : Fd,
+    devfile : File,
+}
+
+impl PinPoller {
+
+    /// Get the pin associated with this PinPoller
+    ///
+    /// Note that this will be a new Pin object with the
+    /// proper pin number.
+    pub fn get_pin(&self) -> Pin {
+        return Pin::new(self.pin_num);
+    }
+
+    /// Create a new PinPoller for the provided pin number
+    pub fn new(pin_num : u64) -> io::Result<PinPoller> {
+        let devfile : File = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num)));
+        let devfile_fd = devfile.as_raw_fd();
+        let epoll_fd = try!(epoll_create().map_err(from_nix_error));
+        let events = EPOLLPRI | EPOLLET;
+        let info = EpollEvent {
+            events: events,
+            data: 0u64,
+        };
+
+        match epoll_ctl(epoll_fd, EpollOp::EpollCtlAdd, devfile_fd, &info) {
+            Ok(_) => {
+                let pp = PinPoller {
+                    pin_num: pin_num,
+                    devfile: devfile,
+                    epoll_fd: epoll_fd,
+                };
+                Ok(pp)
+            },
+            Err(err) => {
+                let _ = close(epoll_fd); // cleanup
+                Err(from_nix_error(err))
+            }
+        }
+    }
+
+    /// Block until an interrupt occurs
+    ///
+    /// This call will block until an interrupt occurs.  The types
+    /// of interrupts which may result in this call returning
+    /// may be configured by calling `set_edge()` prior to
+    /// makeing this call.  This call makes use of epoll under the
+    /// covers.  If it is desirable to poll on multiple GPIOs or
+    /// other event source, you will need to implement that logic
+    /// yourself.
+    ///
+    /// This function will return Some(value) of the pin if a change is
+    /// detected or None if a timeout occurs.  Note that the value provided
+    /// is the value of the pin as soon as we get to hanlding the interrupt
+    /// in userspace.  Each time this fuction returns with a value, a change
+    /// has occurred, but you could end up reading the same value multiple
+    /// times as the value has changed back between when the interrupt
+    /// ocurred and the current time.
+    pub fn poll(&mut self, timeout_ms: usize) -> io::Result<Option<u8>> {
+        try!(flush_input_from_file(&mut self.devfile, 255));
+        let dummy_event = EpollEvent { events: EPOLLPRI | EPOLLET, data: 0u64};
+        let mut events: [EpollEvent; 1] = [ dummy_event ];
+        let cnt = try!(epoll_wait(self.epoll_fd, &mut events, timeout_ms).map_err(from_nix_error));
+        Ok(match cnt {
+            0 => None, // timeout
+            _ => Some(try!(get_value_from_file(&mut self.devfile))),
+        })
+    }
+}
+
+impl Drop for PinPoller {
+    fn drop(&mut self) {
+        // we implement drop to close the underlying epoll fd as
+        // it does not implement drop itself.  This is similar to
+        // how mio works
+        close(self.epoll_fd).unwrap();  // panic! if close files
     }
 }

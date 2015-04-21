@@ -10,18 +10,25 @@ extern crate sysfs_gpio;
 
 use sysfs_gpio::{Direction, Edge, Pin};
 use std::env;
-use std::io;
+use std::io::prelude::*;
+use std::io::{stdout,Result};
 
-fn interrupt(pin : u64) -> io::Result<()> {
+fn interrupt(pin : u64) -> Result<()> {
     let input = Pin::new(pin);
     input.with_exported(|| {
         try!(input.set_direction(Direction::In));
-        let edge = try!(input.get_edge());
-        println!("Edge: {:?}", edge);
         try!(input.set_edge(Edge::BothEdges));
-        let edge = try!(input.get_edge());
-        println!("Edge: {:?}", edge);
-        Ok(())
+        let mut poller = try!(input.get_poller());
+        loop {
+            match try!(poller.poll(1000)) {
+                Some(value) => println!("{}", value),
+                None => {
+                    let mut stdout = stdout();
+                    try!(stdout.write(b"."));
+                    try!(stdout.flush());
+                },
+            }
+        }
     })
 }
 
