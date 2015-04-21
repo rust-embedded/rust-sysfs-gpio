@@ -76,8 +76,8 @@ The following features are planned for the library:
 - [x] Support for reading the value of a GPIO input
 - [x] Support for writing the value of a GPIO output
 - [ ] Support for configuring whether a pin is active low/high
-- [ ] Support for configuring interrupts on GPIO
-- [ ] Support for polling on GPIO with configured interrupt
+- [x] Support for configuring interrupts on GPIO
+- [x] Support for polling on GPIO with configured interrupt
 
 Cross Compiling
 ---------------
