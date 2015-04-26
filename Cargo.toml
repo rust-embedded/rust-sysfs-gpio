@@ -14,5 +14,5 @@ and more managed interface for reading, writing, and
 polling on GPIO interrupts
 """
 
-[dependencies]
-nix = "*"
+[dependencies.nix]
+git = "https://github.com/carllerche/nix-rust.git"

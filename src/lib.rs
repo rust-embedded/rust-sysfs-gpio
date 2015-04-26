@@ -62,21 +62,8 @@ macro_rules! try_unexport {
     });
 }
 
-pub fn from_nix_error(err: ::nix::Error) -> io::Error {
-    // taken from mio::io, line 178
-    use std::mem;
-
-    // TODO: Remove insane hacks once `std::io::Error::from_os_error` lands
-    //       rust-lang/rust#24028
-    #[allow(dead_code)]
-    enum Repr {
-        Os(i32),
-        Custom(*const ()),
-    }
-
-    unsafe {
-        mem::transmute(Repr::Os(err.errno() as i32))
-    }
+fn from_nix_error(err: ::nix::Error) -> io::Error {
+    io::Error::from_raw_os_error(err.errno() as i32)
 }
 
 /// Flush up to max bytes from the provided files input buffer
