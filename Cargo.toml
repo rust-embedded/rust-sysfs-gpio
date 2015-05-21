@@ -1,7 +1,7 @@
 [package]
 
-name = "sysfs_gpio"
-version = "0.3.0"
+name = "sysfs-gpio"
+version = "0.4.0"
 authors = ["Paul Osborne <osbpau@gmail.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/posborne/rust-sysfs-gpio"
@@ -9,10 +9,12 @@ homepage = "https://github.com/posborne/rust-sysfs-gpio"
 documentation = "http://posborne.github.io/rust-sysfs-gpio/"
 description = """
 Provides access to the Linux sysfs interface to GPIOs.
-Includes a low-level interface as well as a higher-level
-and more managed interface for reading, writing, and
-polling on GPIO interrupts
+Via the `sysfs_gpio` crate you can export, unexport,
+set the direction, read, write, and poll (using
+interrupts) GPIOs from userspace.
+
+See https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
 """
 
-[dependencies.nix]
-git = "https://github.com/carllerche/nix-rust.git"
+[dependencies]
+nix = "*"
