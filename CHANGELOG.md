@@ -2,6 +2,20 @@
 
 ## [Unreleased][unreleased]
 
+## [0.3.1] - 2015-05-21
+
+### Fixed
+
+- Converting from a nix error to an io::Error has been simplified and
+  updated to work with future versions of nix
+
+### Changed
+
+- Documentation now refers to package as `sysfs-gpio` with a dash
+  instead of an underscore as per common convention.  The package
+  name on crates.io cannot be changed right now, however.
+- Documentation updates.
+
 ## [0.3.0] - 2015-04-20
 
 ### Fixed
@@ -55,7 +69,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.0...HEAD
+[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.1...HEAD
+[0.3.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.1.1...0.2.0
