@@ -28,13 +28,12 @@
 ///! extern crate sysfs_gpio;
 ///! use sysfs_gpio::Pin;
 ///!
-///! 
+///!
 ///! ```
 
 extern crate nix;
 
 use nix::sys::epoll::*;
-use nix::fcntl::Fd;
 use nix::unistd::close;
 
 use std::io::prelude::*;
@@ -95,7 +94,7 @@ impl Pin {
         try!(dev_file.write_all(value.as_bytes()));
         Ok(())
     }
-    
+
     /// Create a new Pin with the provided `pin_num`
     ///
     /// This function does not export the provided pin_num.
@@ -274,7 +273,7 @@ impl Pin {
 
 pub struct PinPoller {
     pin_num : u64,
-    epoll_fd : Fd,
+    epoll_fd : RawFd,
     devfile : File,
 }
 
@@ -332,7 +331,7 @@ impl PinPoller {
     /// has occurred, but you could end up reading the same value multiple
     /// times as the value has changed back between when the interrupt
     /// ocurred and the current time.
-    pub fn poll(&mut self, timeout_ms: usize) -> io::Result<Option<u8>> {
+    pub fn poll(&mut self, timeout_ms: isize) -> io::Result<Option<u8>> {
         try!(flush_input_from_file(&mut self.devfile, 255));
         let dummy_event = EpollEvent { events: EPOLLPRI | EPOLLET, data: 0u64};
         let mut events: [EpollEvent; 1] = [ dummy_event ];
