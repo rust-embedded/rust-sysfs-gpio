@@ -2,6 +2,12 @@
 
 ## [Unreleased][unreleased]
 
+## [0.3.2] - 2015-07-13
+
+### Fixed
+
+- We now work with the latest version of nix
+
 ## [0.3.1] - 2015-05-21
 
 ### Fixed
