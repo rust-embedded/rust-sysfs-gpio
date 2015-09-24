@@ -206,6 +206,28 @@ impl Pin {
         Ok(())
     }
 
+    /// Get the pin number for the Pin
+    pub fn get_pin(&self) -> u64 {
+        self.pin_num
+    }
+
+    /// Get the direction of the Pin
+    pub fn get_direction(&self) -> io::Result<Direction> {
+        match self.read_from_device_file("direction") {
+            Ok(s) => {
+                match s.trim() {
+                    "in" => Ok(Direction::In),
+                    "out" => Ok(Direction::Out),
+                    "high" => Ok(Direction::High),
+                    "low" => Ok(Direction::Low),
+                    other => Err(Error::new(ErrorKind::Other,
+                                            format!("Unexpected direction file contents {}", other))),
+                }
+            }
+            Err(e) => Err(e)
+        }
+    }
+
     /// Set this GPIO as either an input or an output
     ///
     /// The basic values allowed here are `Direction::In` and
