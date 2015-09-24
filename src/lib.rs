@@ -135,14 +135,17 @@ impl Pin {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
-    /// gpio = Pin::new(24);
-    /// let res = gpio::with_exported(|| {
+    /// ```no_run
+    /// use sysfs_gpio::{Pin, Direction};
+    ///
+    /// let gpio = Pin::new(24);
+    /// let res = gpio.with_exported(|| {
     ///     println!("At this point, the Pin is exported");
     ///     try!(gpio.set_direction(Direction::Low));
     ///     try!(gpio.set_value(1));
     ///     // ...
-    /// };
+    ///     Ok(())
+    /// });
     /// ```
     #[inline]
     pub fn with_exported<F: FnOnce() -> io::Result<()>>(&self, closure : F) -> io::Result<()> {
@@ -169,13 +172,13 @@ impl Pin {
     ///    be exported by use in userspace
     ///
     /// # Example
-    /// ```rust,ignore
+    /// ```no_run
     /// use sysfs_gpio::Pin;
     ///
-    /// gpio = Pin::new(24);
+    /// let gpio = Pin::new(24);
     /// match gpio.export() {
-    ///     Ok(()) => println!("Gpio {} exported!", gpio.pin),
-    ///     Err(err) => println!("Gpio {} could not be exported: {}", gpio.pin, err),
+    ///     Ok(()) => println!("Gpio {} exported!", gpio.get_pin()),
+    ///     Err(err) => println!("Gpio {} could not be exported: {}", gpio.get_pin(), err),
     /// }
     /// ```
     pub fn export(&self) -> io::Result<()> {
