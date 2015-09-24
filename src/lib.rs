@@ -129,9 +129,9 @@ impl Pin {
 
     /// Run a closure with the GPIO exported
     ///
-    /// Prior to the provided closure being executed, the Gpio
-    /// will be eported.  After the closure execution is complete,
-    /// the Gpio will be unexported.
+    /// Prior to the provided closure being executed, the GPIO
+    /// will be exported.  After the closure execution is complete,
+    /// the GPIO will be unexported.
     ///
     /// # Example
     ///
@@ -374,18 +374,18 @@ impl PinPoller {
     /// This call will block until an interrupt occurs.  The types
     /// of interrupts which may result in this call returning
     /// may be configured by calling `set_edge()` prior to
-    /// makeing this call.  This call makes use of epoll under the
+    /// making this call.  This call makes use of epoll under the
     /// covers.  If it is desirable to poll on multiple GPIOs or
     /// other event source, you will need to implement that logic
     /// yourself.
     ///
     /// This function will return Some(value) of the pin if a change is
     /// detected or None if a timeout occurs.  Note that the value provided
-    /// is the value of the pin as soon as we get to hanlding the interrupt
-    /// in userspace.  Each time this fuction returns with a value, a change
+    /// is the value of the pin as soon as we get to handling the interrupt
+    /// in userspace.  Each time this function returns with a value, a change
     /// has occurred, but you could end up reading the same value multiple
     /// times as the value has changed back between when the interrupt
-    /// ocurred and the current time.
+    /// occurred and the current time.
     pub fn poll(&mut self, timeout_ms: isize) -> io::Result<Option<u8>> {
         try!(flush_input_from_file(&mut self.devfile, 255));
         let dummy_event = EpollEvent { events: EPOLLPRI | EPOLLET, data: 0u64};
