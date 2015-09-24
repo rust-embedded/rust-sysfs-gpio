@@ -12,24 +12,36 @@
 #![crate_type = "lib"]
 #![crate_name = "sysfs_gpio"]
 
-///! GPIO access under Linux using the GPIO sysfs interface
-///!
-///! The methods exposed by this library are centered around
-///! the `Pin` struct and map pretty directly the API exposed
-///! by the kernel in syfs (https://www.kernel.org/doc/Documentation/gpio/sysfs.txt).
-///!
-///! # Examples
-///!
-///! Typical usage for systems where one wants to ensure that
-///! the pins in use are unexported upon completion looks like
-///! the follwoing:
-///!
-///! ```rust,ignore
-///! extern crate sysfs_gpio;
-///! use sysfs_gpio::Pin;
-///!
-///!
-///! ```
+//! GPIO access under Linux using the GPIO sysfs interface
+//!
+//! The methods exposed by this library are centered around
+//! the `Pin` struct and map pretty directly the API exposed
+//! by the kernel in syfs (https://www.kernel.org/doc/Documentation/gpio/sysfs.txt).
+//!
+//! # Examples
+//!
+//! Typical usage for systems where one wants to ensure that
+//! the pins in use are unexported upon completion looks like
+//! the following:
+//!
+//! ```no_run
+//! extern crate sysfs_gpio;
+//!
+//! use sysfs_gpio::{Direction, Pin};
+//! use std::thread::sleep_ms;
+//!
+//! fn main() {
+//!     let my_led = Pin::new(127); // number depends on chip, etc.
+//!     my_led.with_exported(|| {
+//!         loop {
+//!             my_led.set_value(0).unwrap();
+//!             sleep_ms(200);
+//!             my_led.set_value(1).unwrap();
+//!             sleep_ms(200);
+//!         }
+//!     }).unwrap();
+//! }
+//! ```
 
 extern crate nix;
 
