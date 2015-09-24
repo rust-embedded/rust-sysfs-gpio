@@ -2,6 +2,8 @@ language: rust
 rust:
   - 1.0.0
   - 1.1.0
+  - 1.2.0
+  - 1.3.0
   - beta
   - nightly
 
@@ -21,3 +23,6 @@ after_success: ! '[ $TRAVIS_BRANCH = master ] && [ $TRAVIS_PULL_REQUEST = false 
   && sudo pip install ghp-import
   && ghp-import -n target/doc
   && git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages'
+
+# Use Travis container-based system (much faster to start up)
+sudo: false
