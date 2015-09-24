@@ -15,14 +15,13 @@ use std::io;
 use std::env;
 
 struct Arguments {
-    pin : u64,
-    duration_ms : u32,
-    period_ms : u32,
+    pin: u64,
+    duration_ms: u32,
+    period_ms: u32,
 }
 
-// export a GPIO for use.  This will not fail
-// if already exported
-fn blink_my_led(led : u64, duration_ms : u32, period_ms : u32) -> io::Result<()> {
+// Export a GPIO for use.  This will not fail if already exported
+fn blink_my_led(led: u64, duration_ms: u32, period_ms: u32) -> io::Result<()> {
     let my_led = Pin::new(led);
     my_led.with_exported(|| {
         try!(my_led.set_direction(Direction::Low));

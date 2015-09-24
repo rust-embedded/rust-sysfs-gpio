@@ -182,13 +182,10 @@ impl Pin {
     /// }
     /// ```
     pub fn export(&self) -> io::Result<()> {
-        match fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
-            Ok(_) => {},
-            Err(_) => {
-                let mut export_file = try!(File::create("/sys/class/gpio/export"));
-                try!(export_file.write_all(format!("{}", self.pin_num).as_bytes()));
-            }
-        };
+        if let Err(_) = fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
+            let mut export_file = try!(File::create("/sys/class/gpio/export"));
+            try!(export_file.write_all(format!("{}", self.pin_num).as_bytes()));
+        }
         Ok(())
     }
 
@@ -199,13 +196,10 @@ impl Pin {
     /// exported, it will return without error.  That is, whenever
     /// this function returns Ok, the GPIO is not exported.
     pub fn unexport(&self) -> io::Result<()> {
-        match fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
-            Ok(_) => {
-                let mut unexport_file = try!(File::create("/sys/class/gpio/unexport"));
-                try!(unexport_file.write_all(format!("{}", self.pin_num).as_bytes()));
-            },
-            Err(_) => {} // not exported
-        };
+        if let Ok(_) = fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
+            let mut unexport_file = try!(File::create("/sys/class/gpio/unexport"));
+            try!(unexport_file.write_all(format!("{}", self.pin_num).as_bytes()));
+        }
         Ok(())
     }
 
@@ -342,7 +336,7 @@ impl PinPoller {
     /// Note that this will be a new Pin object with the
     /// proper pin number.
     pub fn get_pin(&self) -> Pin {
-        return Pin::new(self.pin_num);
+        Pin::new(self.pin_num)
     }
 
     /// Create a new PinPoller for the provided pin number
@@ -358,12 +352,11 @@ impl PinPoller {
 
         match epoll_ctl(epoll_fd, EpollOp::EpollCtlAdd, devfile_fd, &info) {
             Ok(_) => {
-                let pp = PinPoller {
+                Ok(PinPoller {
                     pin_num: pin_num,
                     devfile: devfile,
                     epoll_fd: epoll_fd,
-                };
-                Ok(pp)
+                })
             },
             Err(err) => {
                 let _ = close(epoll_fd); // cleanup
