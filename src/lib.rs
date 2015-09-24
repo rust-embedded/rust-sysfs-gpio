@@ -107,6 +107,17 @@ impl Pin {
         Ok(())
     }
 
+    fn read_from_device_file(&self, dev_file_name: &str) -> io::Result<String> {
+        let gpio_path = format!("/sys/class/gpio/gpio{}/{}", self.pin_num, dev_file_name);
+        let mut dev_file = try!(File::create(&gpio_path));
+        let mut s = String::new();
+        if let Err(err) = dev_file.read_to_string(&mut s) {
+            Err(err)
+        } else {
+            Ok(s)
+        }
+    }
+
     /// Create a new Pin with the provided `pin_num`
     ///
     /// This function does not export the provided pin_num.
@@ -224,8 +235,17 @@ impl Pin {
     /// not match the signal level of the actual signal depending
     /// on the GPIO "active_low" entry).
     pub fn get_value(&self) -> io::Result<u8> {
-        let mut dev_file = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", self.pin_num)));
-        get_value_from_file(&mut dev_file)
+        match self.read_from_device_file("value") {
+            Ok(s) => {
+                match s.trim() {
+                    "1" => Ok(1),
+                    "0" => Ok(0),
+                    other => Err(Error::new(ErrorKind::Other,
+                                            format!("Unexpected value file contents {}", other))),
+                }
+            }
+            Err(e) => Err(e)
+        }
     }
 
     /// Set the value of the Pin
@@ -234,12 +254,30 @@ impl Pin {
     /// A 0 value will set the pin low and any other value will
     /// set the pin high (1 is typical).
     pub fn set_value(&self, value : u8) -> io::Result<()> {
-        let val = if value == 0 {
-            "0"
-        } else {
-            "1"
+        let val = match value {
+            0 => "0",
+            _ => "1",
         };
         self.write_to_device_file("value", val)
+    }
+
+    /// Get the currently configured edge for this pin
+    ///
+    /// This value will only be present if the Pin allows
+    /// for interrupts.
+    pub fn get_edge(&self) -> io::Result<Edge> {
+        match self.read_from_device_file("edge") {
+            Ok(s) => {
+                match s.trim() {
+                    "none" => Ok(Edge::NoInterrupt),
+                    "rising" => Ok(Edge::RisingEdge),
+                    "falling" => Ok(Edge::FallingEdge),
+                    "both" => Ok(Edge::BothEdges),
+                    other => Err(Error::new(ErrorKind::Other, format!("Unexpected edge file contents {}", other))),
+                }
+            }
+            Err(e) => Err(e)
+        }
     }
 
     /// Set the edge on which this GPIO will trigger when polled
@@ -254,23 +292,6 @@ impl Pin {
             Edge::FallingEdge => "falling",
             Edge::BothEdges => "both",
         })
-    }
-
-    /// Get the currently configured edge for this pin
-    ///
-    /// This value will only be present if the Pin allows
-    /// for interrupts.
-    pub fn get_edge(&self) -> io::Result<Edge> {
-        let mut dev_file = try!(File::open(&format!("/sys/class/gpio/gpio{}/edge", self.pin_num)));
-        let mut s = String::with_capacity(10);
-        try!(dev_file.read_to_string(&mut s));
-        match s.trim() {
-            "none" => Ok(Edge::NoInterrupt),
-            "rising" => Ok(Edge::RisingEdge),
-            "falling" => Ok(Edge::FallingEdge),
-            "both" => Ok(Edge::BothEdges),
-            other => Err(Error::new(ErrorKind::Other, format!("Unexpected edge file contents {}", other))),
-        }
     }
 
     /// Get a PinPoller object for this pin
