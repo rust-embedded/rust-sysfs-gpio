@@ -1,6 +1,16 @@
 # Change Log
 
-## [Unreleased][unreleased]
+## [0.3.3] - 2015-09-25
+
+### Added
+
+- `get_pin` method added for accessing pin number
+- `get_direction` method added for querying Pin direction
+
+### Changed
+
+- Updates/Fixes to documentation
+- Non-functional code refactoring and cleanup
 
 ## [0.3.2] - 2015-07-13
 
