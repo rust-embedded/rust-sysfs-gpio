@@ -111,11 +111,8 @@ impl Pin {
         let gpio_path = format!("/sys/class/gpio/gpio{}/{}", self.pin_num, dev_file_name);
         let mut dev_file = try!(File::create(&gpio_path));
         let mut s = String::new();
-        if let Err(err) = dev_file.read_to_string(&mut s) {
-            Err(err)
-        } else {
-            Ok(s)
-        }
+        try!(dev_file.read_to_string(&mut s));
+        Ok(s)
     }
 
     /// Create a new Pin with the provided `pin_num`
