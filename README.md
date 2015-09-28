@@ -1,7 +1,7 @@
 rust-sysfs-gpio
 ===============
 
-[![Build Status](https://img.shields.io/travis/posborne/rust-sysfs-gpio.svg)](https://travis-ci.org/posborne/rust-sysfs-gpio)
+[![Build Status](https://travis-ci.org/posborne/rust-sysfs-gpio.svg?branch=master)](https://travis-ci.org/posborne/rust-sysfs-gpio)
 [![Version](https://img.shields.io/crates/v/sysfs-gpio.svg)](https://crates.io/crates/sysfs-gpio)
 [![License](https://img.shields.io/crates/l/sysfs-gpio.svg)](https://github.com/posborne/rust-sysfs-gpio/blob/master/README.md#license)
 
