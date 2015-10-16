@@ -9,11 +9,10 @@
 extern crate sysfs_gpio;
 
 use sysfs_gpio::{Direction, Pin};
-use std::io;
 use std::env;
 use std::thread::sleep_ms;
 
-fn poll(pin_num : u64) -> io::Result<()> {
+fn poll(pin_num : u64) -> sysfs_gpio::Result<()> {
     // NOTE: this currently runs forever and as such if
     // the app is stopped (Ctrl-C), no cleanup will happen
     // and the GPIO will be left exported.  Not much

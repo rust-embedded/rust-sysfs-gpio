@@ -11,9 +11,9 @@ extern crate sysfs_gpio;
 use sysfs_gpio::{Direction, Edge, Pin};
 use std::env;
 use std::io::prelude::*;
-use std::io::{stdout,Result};
+use std::io::{stdout};
 
-fn interrupt(pin : u64) -> Result<()> {
+fn interrupt(pin : u64) -> sysfs_gpio::Result<()> {
     let input = Pin::new(pin);
     input.with_exported(|| {
         try!(input.set_direction(Direction::In));
