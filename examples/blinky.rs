@@ -11,7 +11,6 @@ extern crate sysfs_gpio;
 
 use sysfs_gpio::{Direction, Pin};
 use std::thread::sleep_ms;
-use std::io;
 use std::env;
 
 struct Arguments {
@@ -21,7 +20,7 @@ struct Arguments {
 }
 
 // Export a GPIO for use.  This will not fail if already exported
-fn blink_my_led(led: u64, duration_ms: u32, period_ms: u32) -> io::Result<()> {
+fn blink_my_led(led: u64, duration_ms: u32, period_ms: u32) -> sysfs_gpio::Result<()> {
     let my_led = Pin::new(led);
     my_led.with_exported(|| {
         try!(my_led.set_direction(Direction::Low));

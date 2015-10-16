@@ -50,10 +50,12 @@ use nix::unistd::close;
 
 use std::io::prelude::*;
 use std::os::unix::prelude::*;
-use std::io;
-use std::io::{Error, ErrorKind, SeekFrom};
+use std::io::{self, SeekFrom};
 use std::fs;
 use std::fs::{File};
+
+mod error;
+pub use error::Error;
 
 pub struct Pin {
     pin_num : u64,
@@ -73,9 +75,7 @@ macro_rules! try_unexport {
     });
 }
 
-fn from_nix_error(err: ::nix::Error) -> io::Error {
-    io::Error::from_raw_os_error(err.errno() as i32)
-}
+pub type Result<T> = ::std::result::Result<T, error::Error>;
 
 /// Flush up to max bytes from the provided files input buffer
 ///
@@ -88,13 +88,13 @@ fn flush_input_from_file(dev_file: &mut File, max : usize) -> io::Result<usize> 
 }
 
 /// Get the pin value from the provided file
-fn get_value_from_file(dev_file: &mut File) -> io::Result<u8> {
+fn get_value_from_file(dev_file: &mut File) -> Result<u8> {
     let mut s = String::with_capacity(10);
     try!(dev_file.seek(SeekFrom::Start(0)));
     try!(dev_file.read_to_string(&mut s));
     match s[..1].parse::<u8>() {
         Ok(n) => Ok(n),
-        Err(_) => Err(Error::new(ErrorKind::Other, "Unexpected Error")),
+        Err(_) => Err(Error::Unexpected(format!("Unexpected value file contents: {:?}", s))),
     }
 }
 
@@ -145,7 +145,9 @@ impl Pin {
     /// });
     /// ```
     #[inline]
-    pub fn with_exported<F: FnOnce() -> io::Result<()>>(&self, closure : F) -> io::Result<()> {
+    pub fn with_exported<F: FnOnce() -> Result<()>>(&self, closure : F)
+        -> Result<()> {
+
         try!(self.export());
         match closure() {
             Ok(()) => { try!(self.unexport()); Ok(()) },
@@ -178,7 +180,7 @@ impl Pin {
     ///     Err(err) => println!("Gpio {} could not be exported: {}", gpio.get_pin(), err),
     /// }
     /// ```
-    pub fn export(&self) -> io::Result<()> {
+    pub fn export(&self) -> Result<()> {
         if let Err(_) = fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
             let mut export_file = try!(File::create("/sys/class/gpio/export"));
             try!(export_file.write_all(format!("{}", self.pin_num).as_bytes()));
@@ -192,7 +194,7 @@ impl Pin {
     /// it is currently exported.  If the pin is not currently
     /// exported, it will return without error.  That is, whenever
     /// this function returns Ok, the GPIO is not exported.
-    pub fn unexport(&self) -> io::Result<()> {
+    pub fn unexport(&self) -> Result<()> {
         if let Ok(_) = fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
             let mut unexport_file = try!(File::create("/sys/class/gpio/unexport"));
             try!(unexport_file.write_all(format!("{}", self.pin_num).as_bytes()));
@@ -206,7 +208,7 @@ impl Pin {
     }
 
     /// Get the direction of the Pin
-    pub fn get_direction(&self) -> io::Result<Direction> {
+    pub fn get_direction(&self) -> Result<Direction> {
         match self.read_from_device_file("direction") {
             Ok(s) => {
                 match s.trim() {
@@ -214,11 +216,10 @@ impl Pin {
                     "out" => Ok(Direction::Out),
                     "high" => Ok(Direction::High),
                     "low" => Ok(Direction::Low),
-                    other => Err(Error::new(ErrorKind::Other,
-                                            format!("Unexpected direction file contents {}", other))),
+                    other => Err(Error::Unexpected(format!("direction file contents {}", other))),
                 }
             }
-            Err(e) => Err(e)
+            Err(e) => Err(::std::convert::From::from(e))
         }
     }
 
@@ -235,13 +236,15 @@ impl Pin {
     /// Note that this entry may not exist if the kernel does
     /// not support changing the direction of a pin in userspace.  If
     /// this is the case, you will get an error.
-    pub fn set_direction(&self, dir : Direction) -> io::Result<()> {
-        self.write_to_device_file("direction", match dir {
+    pub fn set_direction(&self, dir : Direction) -> Result<()> {
+        try!(self.write_to_device_file("direction", match dir {
             Direction::In => "in",
             Direction::Out => "out",
             Direction::High => "high",
             Direction::Low => "low",
-        })
+        }));
+
+        Ok(())
     }
 
     /// Get the value of the Pin (0 or 1)
@@ -250,17 +253,16 @@ impl Pin {
     /// and 0 will be returned if the pin is low (this may or may
     /// not match the signal level of the actual signal depending
     /// on the GPIO "active_low" entry).
-    pub fn get_value(&self) -> io::Result<u8> {
+    pub fn get_value(&self) -> Result<u8> {
         match self.read_from_device_file("value") {
             Ok(s) => {
                 match s.trim() {
                     "1" => Ok(1),
                     "0" => Ok(0),
-                    other => Err(Error::new(ErrorKind::Other,
-                                            format!("Unexpected value file contents {}", other))),
+                    other => Err(Error::Unexpected(format!("value file contents {}", other))),
                 }
             }
-            Err(e) => Err(e)
+            Err(e) => Err(::std::convert::From::from(e))
         }
     }
 
@@ -269,19 +271,20 @@ impl Pin {
     /// This will set the value of the pin either high or low.
     /// A 0 value will set the pin low and any other value will
     /// set the pin high (1 is typical).
-    pub fn set_value(&self, value : u8) -> io::Result<()> {
-        let val = match value {
+    pub fn set_value(&self, value : u8) -> Result<()> {
+        try!(self.write_to_device_file("value", match value {
             0 => "0",
             _ => "1",
-        };
-        self.write_to_device_file("value", val)
+        }));
+
+        Ok(())
     }
 
     /// Get the currently configured edge for this pin
     ///
     /// This value will only be present if the Pin allows
     /// for interrupts.
-    pub fn get_edge(&self) -> io::Result<Edge> {
+    pub fn get_edge(&self) -> Result<Edge> {
         match self.read_from_device_file("edge") {
             Ok(s) => {
                 match s.trim() {
@@ -289,10 +292,10 @@ impl Pin {
                     "rising" => Ok(Edge::RisingEdge),
                     "falling" => Ok(Edge::FallingEdge),
                     "both" => Ok(Edge::BothEdges),
-                    other => Err(Error::new(ErrorKind::Other, format!("Unexpected edge file contents {}", other))),
+                    other => Err(Error::Unexpected(format!("Unexpected file contents {}", other))),
                 }
             }
-            Err(e) => Err(e)
+            Err(e) => Err(::std::convert::From::from(e))
         }
     }
 
@@ -301,13 +304,15 @@ impl Pin {
     /// The configured edge determines what changes to the Pin will
     /// result in `poll()` returning.  This call will return an Error
     /// if the pin does not allow interrupts.
-    pub fn set_edge(&self, edge: Edge) -> io::Result<()> {
-        self.write_to_device_file("edge", match edge {
+    pub fn set_edge(&self, edge: Edge) -> Result<()> {
+        try!(self.write_to_device_file("edge", match edge {
             Edge::NoInterrupt => "none",
             Edge::RisingEdge => "rising",
             Edge::FallingEdge => "falling",
             Edge::BothEdges => "both",
-        })
+        }));
+
+        Ok(())
     }
 
     /// Get a PinPoller object for this pin
@@ -315,7 +320,7 @@ impl Pin {
     /// This pin poller object will register an interrupt with the
     /// kernel and allow you to poll() on it and receive notifications
     /// that an interrupt has occured with minimal delay.
-    pub fn get_poller(&self) -> io::Result<PinPoller> {
+    pub fn get_poller(&self) -> Result<PinPoller> {
         PinPoller::new(self.pin_num)
     }
 }
@@ -337,10 +342,10 @@ impl PinPoller {
     }
 
     /// Create a new PinPoller for the provided pin number
-    pub fn new(pin_num : u64) -> io::Result<PinPoller> {
+    pub fn new(pin_num : u64) -> Result<PinPoller> {
         let devfile : File = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num)));
         let devfile_fd = devfile.as_raw_fd();
-        let epoll_fd = try!(epoll_create().map_err(from_nix_error));
+        let epoll_fd = try!(epoll_create());
         let events = EPOLLPRI | EPOLLET;
         let info = EpollEvent {
             events: events,
@@ -357,7 +362,7 @@ impl PinPoller {
             },
             Err(err) => {
                 let _ = close(epoll_fd); // cleanup
-                Err(from_nix_error(err))
+                Err(::std::convert::From::from(err))
             }
         }
     }
@@ -379,11 +384,11 @@ impl PinPoller {
     /// has occurred, but you could end up reading the same value multiple
     /// times as the value has changed back between when the interrupt
     /// occurred and the current time.
-    pub fn poll(&mut self, timeout_ms: isize) -> io::Result<Option<u8>> {
+    pub fn poll(&mut self, timeout_ms: isize) -> Result<Option<u8>> {
         try!(flush_input_from_file(&mut self.devfile, 255));
         let dummy_event = EpollEvent { events: EPOLLPRI | EPOLLET, data: 0u64};
         let mut events: [EpollEvent; 1] = [ dummy_event ];
-        let cnt = try!(epoll_wait(self.epoll_fd, &mut events, timeout_ms).map_err(from_nix_error));
+        let cnt = try!(epoll_wait(self.epoll_fd, &mut events, timeout_ms));
         Ok(match cnt {
             0 => None, // timeout
             _ => Some(try!(get_value_from_file(&mut self.devfile))),
