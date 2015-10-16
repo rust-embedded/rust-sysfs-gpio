@@ -88,13 +88,13 @@ fn flush_input_from_file(dev_file: &mut File, max : usize) -> io::Result<usize> 
 }
 
 /// Get the pin value from the provided file
-fn get_value_from_file(dev_file: &mut File) -> io::Result<u8> {
+fn get_value_from_file(dev_file: &mut File) -> Result<u8> {
     let mut s = String::with_capacity(10);
     try!(dev_file.seek(SeekFrom::Start(0)));
     try!(dev_file.read_to_string(&mut s));
     match s[..1].parse::<u8>() {
         Ok(n) => Ok(n),
-        Err(_) => Err(io::Error::new(io::ErrorKind::Other, "Unexpected Error")),
+        Err(_) => Err(Error::Unexpected(format!("Unexpected value file contents: {:?}", s))),
     }
 }
 
