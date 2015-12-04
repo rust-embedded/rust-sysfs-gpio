@@ -110,7 +110,7 @@ impl Pin {
 
     fn read_from_device_file(&self, dev_file_name: &str) -> io::Result<String> {
         let gpio_path = format!("/sys/class/gpio/gpio{}/{}", self.pin_num, dev_file_name);
-        let mut dev_file = try!(File::create(&gpio_path));
+        let mut dev_file = try!(File::open(&gpio_path));
         let mut s = String::new();
         try!(dev_file.read_to_string(&mut s));
         Ok(s)
