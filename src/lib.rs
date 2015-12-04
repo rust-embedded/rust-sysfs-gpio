@@ -57,6 +57,7 @@ use std::fs::{File};
 mod error;
 pub use error::Error;
 
+#[derive(Debug)]
 pub struct Pin {
     pin_num : u64,
 }
@@ -325,6 +326,7 @@ impl Pin {
     }
 }
 
+#[derive(Debug)]
 pub struct PinPoller {
     pin_num : u64,
     epoll_fd : RawFd,
