@@ -10,7 +10,8 @@
 extern crate sysfs_gpio;
 
 use sysfs_gpio::{Direction, Pin};
-use std::thread::sleep_ms;
+use std::thread::sleep;
+use std::time::Duration;
 use std::env;
 
 struct Arguments {
@@ -27,9 +28,9 @@ fn blink_my_led(led: u64, duration_ms: u32, period_ms: u32) -> sysfs_gpio::Resul
         let iterations = duration_ms / period_ms / 2;
         for _ in 0..iterations {
             try!(my_led.set_value(0));
-            sleep_ms(period_ms);
+            sleep(Duration::from_millis(period_ms as u64));
             try!(my_led.set_value(1));
-            sleep_ms(period_ms);
+            sleep(Duration::from_millis(period_ms as u64));
         }
         try!(my_led.set_value(0));
         Ok(())
