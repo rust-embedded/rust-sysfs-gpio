@@ -57,6 +57,7 @@ use std::fs::{File};
 mod error;
 pub use error::Error;
 
+#[derive(Debug)]
 pub struct Pin {
     pin_num : u64,
 }
@@ -109,7 +110,7 @@ impl Pin {
 
     fn read_from_device_file(&self, dev_file_name: &str) -> io::Result<String> {
         let gpio_path = format!("/sys/class/gpio/gpio{}/{}", self.pin_num, dev_file_name);
-        let mut dev_file = try!(File::create(&gpio_path));
+        let mut dev_file = try!(File::open(&gpio_path));
         let mut s = String::new();
         try!(dev_file.read_to_string(&mut s));
         Ok(s)
@@ -325,6 +326,7 @@ impl Pin {
     }
 }
 
+#[derive(Debug)]
 pub struct PinPoller {
     pin_num : u64,
     epoll_fd : RawFd,
