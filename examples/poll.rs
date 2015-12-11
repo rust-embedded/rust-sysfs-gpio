@@ -12,7 +12,7 @@ use sysfs_gpio::{Direction, Pin};
 use std::env;
 use std::thread::sleep_ms;
 
-fn poll(pin_num : u64) -> sysfs_gpio::Result<()> {
+fn poll(pin_num: u64) -> sysfs_gpio::Result<()> {
     // NOTE: this currently runs forever and as such if
     // the app is stopped (Ctrl-C), no cleanup will happen
     // and the GPIO will be left exported.  Not much
@@ -21,12 +21,16 @@ fn poll(pin_num : u64) -> sysfs_gpio::Result<()> {
     let input = Pin::new(pin_num);
     input.with_exported(|| {
         try!(input.set_direction(Direction::In));
-        let mut prev_val : u8 = 255;
+        let mut prev_val: u8 = 255;
         loop {
             let val = try!(input.get_value());
             if val != prev_val {
                 println!("Pin State: {}",
-                         if val == 0 { "Low" } else { "High" });
+                         if val == 0 {
+                             "Low"
+                         } else {
+                             "High"
+                         });
                 prev_val = val;
             }
             sleep_ms(10);
@@ -40,10 +44,12 @@ fn main() {
         println!("Usage: ./poll <pin>");
     } else {
         match args[1].parse::<u64>() {
-            Ok(pin) => match poll(pin) {
-                Ok(()) => println!("Polling Complete!"),
-                Err(err) => println!("Error: {}", err),
-            },
+            Ok(pin) => {
+                match poll(pin) {
+                    Ok(()) => println!("Polling Complete!"),
+                    Err(err) => println!("Error: {}", err),
+                }
+            }
             Err(_) => println!("Usage: ./poll <pin>"),
         }
     }
