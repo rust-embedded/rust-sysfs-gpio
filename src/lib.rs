@@ -52,21 +52,31 @@ use std::io::prelude::*;
 use std::os::unix::prelude::*;
 use std::io::{self, SeekFrom};
 use std::fs;
-use std::fs::{File};
+use std::fs::File;
 
 mod error;
 pub use error::Error;
 
 #[derive(Debug)]
 pub struct Pin {
-    pin_num : u64,
+    pin_num: u64,
 }
 
 #[derive(Clone,Debug)]
-pub enum Direction {In, Out, High, Low}
+pub enum Direction {
+    In,
+    Out,
+    High,
+    Low,
+}
 
 #[derive(Clone,Debug)]
-pub enum Edge {NoInterrupt, RisingEdge, FallingEdge, BothEdges}
+pub enum Edge {
+    NoInterrupt,
+    RisingEdge,
+    FallingEdge,
+    BothEdges,
+}
 
 #[macro_export]
 macro_rules! try_unexport {
@@ -83,7 +93,7 @@ pub type Result<T> = ::std::result::Result<T, error::Error>;
 /// Typically, one would just use seek() for this sort of thing,
 /// but for certain files (e.g. in sysfs), you need to actually
 /// read it.
-fn flush_input_from_file(dev_file: &mut File, max : usize) -> io::Result<usize> {
+fn flush_input_from_file(dev_file: &mut File, max: usize) -> io::Result<usize> {
     let mut s = String::with_capacity(max);
     dev_file.read_to_string(&mut s)
 }
@@ -119,10 +129,8 @@ impl Pin {
     /// Create a new Pin with the provided `pin_num`
     ///
     /// This function does not export the provided pin_num.
-    pub fn new(pin_num : u64) -> Pin {
-        Pin {
-            pin_num: pin_num,
-        }
+    pub fn new(pin_num: u64) -> Pin {
+        Pin { pin_num: pin_num }
     }
 
     /// Run a closure with the GPIO exported
@@ -146,13 +154,18 @@ impl Pin {
     /// });
     /// ```
     #[inline]
-    pub fn with_exported<F: FnOnce() -> Result<()>>(&self, closure : F)
-        -> Result<()> {
+    pub fn with_exported<F: FnOnce() -> Result<()>>(&self, closure: F) -> Result<()> {
 
         try!(self.export());
         match closure() {
-            Ok(()) => { try!(self.unexport()); Ok(()) },
-            Err(err) => { try!(self.unexport()); Err(err) },
+            Ok(()) => {
+                try!(self.unexport());
+                Ok(())
+            }
+            Err(err) => {
+                try!(self.unexport());
+                Err(err)
+            }
         }
     }
 
@@ -220,7 +233,7 @@ impl Pin {
                     other => Err(Error::Unexpected(format!("direction file contents {}", other))),
                 }
             }
-            Err(e) => Err(::std::convert::From::from(e))
+            Err(e) => Err(::std::convert::From::from(e)),
         }
     }
 
@@ -237,13 +250,14 @@ impl Pin {
     /// Note that this entry may not exist if the kernel does
     /// not support changing the direction of a pin in userspace.  If
     /// this is the case, you will get an error.
-    pub fn set_direction(&self, dir : Direction) -> Result<()> {
-        try!(self.write_to_device_file("direction", match dir {
-            Direction::In => "in",
-            Direction::Out => "out",
-            Direction::High => "high",
-            Direction::Low => "low",
-        }));
+    pub fn set_direction(&self, dir: Direction) -> Result<()> {
+        try!(self.write_to_device_file("direction",
+                                       match dir {
+                                           Direction::In => "in",
+                                           Direction::Out => "out",
+                                           Direction::High => "high",
+                                           Direction::Low => "low",
+                                       }));
 
         Ok(())
     }
@@ -263,7 +277,7 @@ impl Pin {
                     other => Err(Error::Unexpected(format!("value file contents {}", other))),
                 }
             }
-            Err(e) => Err(::std::convert::From::from(e))
+            Err(e) => Err(::std::convert::From::from(e)),
         }
     }
 
@@ -272,11 +286,12 @@ impl Pin {
     /// This will set the value of the pin either high or low.
     /// A 0 value will set the pin low and any other value will
     /// set the pin high (1 is typical).
-    pub fn set_value(&self, value : u8) -> Result<()> {
-        try!(self.write_to_device_file("value", match value {
-            0 => "0",
-            _ => "1",
-        }));
+    pub fn set_value(&self, value: u8) -> Result<()> {
+        try!(self.write_to_device_file("value",
+                                       match value {
+                                           0 => "0",
+                                           _ => "1",
+                                       }));
 
         Ok(())
     }
@@ -296,7 +311,7 @@ impl Pin {
                     other => Err(Error::Unexpected(format!("Unexpected file contents {}", other))),
                 }
             }
-            Err(e) => Err(::std::convert::From::from(e))
+            Err(e) => Err(::std::convert::From::from(e)),
         }
     }
 
@@ -306,12 +321,13 @@ impl Pin {
     /// result in `poll()` returning.  This call will return an Error
     /// if the pin does not allow interrupts.
     pub fn set_edge(&self, edge: Edge) -> Result<()> {
-        try!(self.write_to_device_file("edge", match edge {
-            Edge::NoInterrupt => "none",
-            Edge::RisingEdge => "rising",
-            Edge::FallingEdge => "falling",
-            Edge::BothEdges => "both",
-        }));
+        try!(self.write_to_device_file("edge",
+                                       match edge {
+                                           Edge::NoInterrupt => "none",
+                                           Edge::RisingEdge => "rising",
+                                           Edge::FallingEdge => "falling",
+                                           Edge::BothEdges => "both",
+                                       }));
 
         Ok(())
     }
@@ -328,13 +344,12 @@ impl Pin {
 
 #[derive(Debug)]
 pub struct PinPoller {
-    pin_num : u64,
-    epoll_fd : RawFd,
-    devfile : File,
+    pin_num: u64,
+    epoll_fd: RawFd,
+    devfile: File,
 }
 
 impl PinPoller {
-
     /// Get the pin associated with this PinPoller
     ///
     /// Note that this will be a new Pin object with the
@@ -344,8 +359,8 @@ impl PinPoller {
     }
 
     /// Create a new PinPoller for the provided pin number
-    pub fn new(pin_num : u64) -> Result<PinPoller> {
-        let devfile : File = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num)));
+    pub fn new(pin_num: u64) -> Result<PinPoller> {
+        let devfile: File = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num)));
         let devfile_fd = devfile.as_raw_fd();
         let epoll_fd = try!(epoll_create());
         let events = EPOLLPRI | EPOLLET;
@@ -361,7 +376,7 @@ impl PinPoller {
                     devfile: devfile,
                     epoll_fd: epoll_fd,
                 })
-            },
+            }
             Err(err) => {
                 let _ = close(epoll_fd); // cleanup
                 Err(::std::convert::From::from(err))
@@ -388,8 +403,11 @@ impl PinPoller {
     /// occurred and the current time.
     pub fn poll(&mut self, timeout_ms: isize) -> Result<Option<u8>> {
         try!(flush_input_from_file(&mut self.devfile, 255));
-        let dummy_event = EpollEvent { events: EPOLLPRI | EPOLLET, data: 0u64};
-        let mut events: [EpollEvent; 1] = [ dummy_event ];
+        let dummy_event = EpollEvent {
+            events: EPOLLPRI | EPOLLET,
+            data: 0u64,
+        };
+        let mut events: [EpollEvent; 1] = [dummy_event];
         let cnt = try!(epoll_wait(self.epoll_fd, &mut events, timeout_ms));
         Ok(match cnt {
             0 => None, // timeout

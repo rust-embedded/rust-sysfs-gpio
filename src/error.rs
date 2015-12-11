@@ -22,7 +22,7 @@ impl ::std::error::Error for Error {
         match *self {
             Error::Io(ref e) => Some(e),
             // nix::Error doesn't implement std::error::Error; its cause is also None.
-            _ => None
+            _ => None,
         }
     }
 }
