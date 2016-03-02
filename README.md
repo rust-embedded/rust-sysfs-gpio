@@ -22,7 +22,7 @@ To use `sysfs_gpio`, first add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-sysfs_gpio = "*"
+sysfs_gpio = "0.4.0"
 ```
 
 Then, add this to your crate root:
@@ -86,23 +86,11 @@ raspberry pi or beaglebone black:
 1. Install rust and cargo
 2. Install an appropriate cross compiler.  On an Ubuntu system, this
    can be done by doing `sudo apt-get install g++-arm-linux-gnueabihf`.
-3. Build or install rust for your target.  This is necessary in order
-   to have libstd available for your target.  For arm-linux-gnueabihf,
-   you can find binaries at https://github.com/japaric/ruststrap.
-   With this approach or building it yourself, you will need to copy
-   the ${rust}/lib/rustlib/arm-unknown-linux-gnueabihf to your system
-   rust library folder (it is namespaced by triple, so it shouldn't
-   break anything).
+3. Build or install rust for your target.  For some hints, check out
+   https://github.com/japaric/rust-cross.
 4. Tell cargo how to link by adding the lines below to your
    ~/.cargo/config file.
-5. Run your build `cargo build --target=arm-unknown-linux-gnueabi`.
-
-The following snippet added to my ~/.cargo/config worked for me:
-
-```
-[target.arm-unknown-linux-gnueabihf]
-linker = "arm-linux-gnueabihf-gcc"
-```
+5. Run your build `cargo build --target=arm-unknown-linux-gnueabihf`.
 
 Running the Example
 -------------------
@@ -112,7 +100,6 @@ can then move that to your device by whatever means and run it.
 
 ```
 $ cargo build --target=arm-unknown-linux-gnueabihf --example blinky
-  ...
 $ scp target/arm-unknown-linux-gnueabihf/debug/examples/blinky ...
 ```
 
