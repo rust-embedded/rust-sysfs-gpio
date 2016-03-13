@@ -4,9 +4,9 @@ name = "sysfs_gpio"
 version = "0.4.0"
 authors = ["Paul Osborne <osbpau@gmail.com>"]
 license = "MIT/Apache-2.0"
-repository = "https://github.com/posborne/rust-sysfs-gpio"
-homepage = "https://github.com/posborne/rust-sysfs-gpio"
-documentation = "http://posborne.github.io/rust-sysfs-gpio/"
+repository = "https://github.com/rust-embedded/rust-sysfs-gpio"
+homepage = "https://github.com/rust-embedded/rust-sysfs-gpio"
+documentation = "http://rust-embedded.github.io/rust-sysfs-gpio/"
 description = """
 Provides access to the Linux sysfs interface to GPIOs.
 Via the `sysfs_gpio` crate you can export, unexport,
