@@ -17,4 +17,4 @@ See https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
 """
 
 [dependencies]
-nix = "^0.4.2"
+nix = "^0.5.0"

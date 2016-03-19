@@ -1,4 +1,9 @@
 language: rust
+dist: trusty
+sudo: false
+services:
+  - docker
+
 rust:
   - 1.2.0
   - 1.3.0
@@ -9,14 +14,30 @@ rust:
   - beta
   - nightly
 
+script:
+  - export RUST_CROSS_REVISION=crossbuild-script; curl https://raw.githubusercontent.com/rust-embedded/docker-rust-cross/crossbuild-script/scripts/run-travis.sh | bash
+  - cargo doc
+
+matrix:
+  # Script will attempt to pick best docker container to use based on target/version, but
+  # it can be specified via DOCKER_IMAGE if desired
+  include:
+    - env: RUST_TARGET=arm-unknown-linux-gnueabihf
+      rust: 1.7.0
+      sudo: true
+    - env: RUST_TARGET=aarch64-unknown-linux-gnu
+      rust: 1.7.0
+      sudo: true
+    - env: RUST_TARGET=mips-unknown-linux-gnu
+      rust: 1.7.0
+      sudo: true
+    - env: RUST_TARGET=arm-linux-androideabi
+      rust: 1.7.0
+      sudo: true
+
 env:
   global:
     - secure: "KqhgPk6Hy0m37r27fy5ai5DxWN+XP72Zz/oWqWqpIQowIIPI2X0FvmEUEflWim++8KB6CD3l5e61ZpO+Cyp+K1JQBplyVPYvJeLV+2CGeRCcaIgjBx2hkJtI3J9pnyr4hbY5DUL0AodgxuOke7t7i9fZz9X6K9fWjco7sn2mfz4="
-
-script:
-  - cargo build --verbose
-  - cargo test --verbose
-  - cargo doc
 
 # Publish documentation on successfull master build
 # using the ghp-import python package
@@ -25,6 +46,3 @@ after_success: ! '[ $TRAVIS_BRANCH = master ] && [ $TRAVIS_PULL_REQUEST = false 
   && sudo pip install ghp-import
   && ghp-import -n target/doc
   && git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages'
-
-# Use Travis container-based system (much faster to start up)
-sudo: false
