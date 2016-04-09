@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.4.1] - 2016-04-8
+
+### Changed
+
+- A few additional traits are derived for types exposed by the library.
+- Links/Docs updated with move to rust-embedded Github org
+
 ## [0.4.0] - 2015-12-04
 
 ### Changed
@@ -97,7 +104,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.0...HEAD
+[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.3...0.4.0
 [0.3.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.2...0.3.3
 [0.3.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.1...0.3.2
