@@ -57,12 +57,12 @@ use std::fs::File;
 mod error;
 pub use error::Error;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Pin {
     pin_num: u64,
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Direction {
     In,
     Out,
@@ -70,7 +70,7 @@ pub enum Direction {
     Low,
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Edge {
     NoInterrupt,
     RisingEdge,
