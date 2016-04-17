@@ -8,20 +8,22 @@ pub enum Error {
     Io(io::Error),
     /// Read unusual data from sysfs file.
     Unexpected(String),
+    /// Invalid Path
+    InvalidPath(String),
 }
 
 impl ::std::error::Error for Error {
     fn description(&self) -> &str {
         match *self {
             Error::Io(ref e) => e.description(),
-            Error::Unexpected(_) => "something unexpected",
+            Error::Unexpected(_) => "An Unexpected Error Occurred",
+            Error::InvalidPath(_) => "A Provided Path was invalid",
         }
     }
 
     fn cause(&self) -> Option<&::std::error::Error> {
         match *self {
             Error::Io(ref e) => Some(e),
-            // nix::Error doesn't implement std::error::Error; its cause is also None.
             _ => None,
         }
     }
@@ -32,6 +34,7 @@ impl fmt::Display for Error {
         match *self {
             Error::Io(ref e) => e.fmt(f),
             Error::Unexpected(ref s) => write!(f, "Unexpected: {}", s),
+            Error::InvalidPath(ref s) => write!(f, "Invalid Path: {}", s),
         }
     }
 }
