@@ -10,26 +10,27 @@
 extern crate sysfs_gpio;
 
 use sysfs_gpio::{Direction, Pin};
-use std::thread::sleep_ms;
+use std::time::Duration;
+use std::thread::sleep;
 use std::env;
 
 struct Arguments {
     pin: u64,
-    duration_ms: u32,
-    period_ms: u32,
+    duration_ms: u64,
+    period_ms: u64,
 }
 
 // Export a GPIO for use.  This will not fail if already exported
-fn blink_my_led(led: u64, duration_ms: u32, period_ms: u32) -> sysfs_gpio::Result<()> {
+fn blink_my_led(led: u64, duration_ms: u64, period_ms: u64) -> sysfs_gpio::Result<()> {
     let my_led = Pin::new(led);
     my_led.with_exported(|| {
         try!(my_led.set_direction(Direction::Low));
         let iterations = duration_ms / period_ms / 2;
         for _ in 0..iterations {
             try!(my_led.set_value(0));
-            sleep_ms(period_ms);
+            sleep(Duration::from_millis(period_ms));
             try!(my_led.set_value(1));
-            sleep_ms(period_ms);
+            sleep(Duration::from_millis(period_ms));
         }
         try!(my_led.set_value(0));
         Ok(())
@@ -49,11 +50,11 @@ fn get_args() -> Option<Arguments> {
         Ok(pin) => pin,
         Err(_) => return None,
     };
-    let duration_ms = match args[2].parse::<u32>() {
+    let duration_ms = match args[2].parse::<u64>() {
         Ok(ms) => ms,
         Err(_) => return None,
     };
-    let period_ms = match args[3].parse::<u32>() {
+    let period_ms = match args[3].parse::<u64>() {
         Ok(ms) => ms,
         Err(_) => return None,
     };
