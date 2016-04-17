@@ -169,6 +169,14 @@ impl Pin {
         }
     }
 
+    /// Determines whether the GPIO is exported
+    ///
+    /// This function will error out if the kernel does not support the GPIO
+    /// sysfs interface (i.e. `/sys/class/gpio` does not exist).
+    pub fn is_exported(&self) -> bool {
+        fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)).is_ok()
+    }
+
     /// Export the GPIO
     ///
     /// This is equivalent to `echo N > /sys/class/gpio/export` with
