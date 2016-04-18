@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.4.2] - 2016-04-17
+
+### Changed
+
+- `Pin` now has an `is_exported()` function
+
+### Fixed
+
+- Moved to nix 0.5 which fixes problems on some architectures
+
 ## [0.4.1] - 2016-04-8
 
 ### Changed
@@ -104,7 +114,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.1...HEAD
+[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.2...HEAD
+[0.4.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.3...0.4.0
 [0.3.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.2...0.3.3

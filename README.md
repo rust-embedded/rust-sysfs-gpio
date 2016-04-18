@@ -22,7 +22,7 @@ To use `sysfs_gpio`, first add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-sysfs_gpio = "0.4.0"
+sysfs_gpio = "0.4"
 ```
 
 Then, add this to your crate root:
