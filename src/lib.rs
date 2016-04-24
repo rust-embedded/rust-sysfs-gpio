@@ -28,22 +28,24 @@
 //! extern crate sysfs_gpio;
 //!
 //! use sysfs_gpio::{Direction, Pin};
-//! use std::thread::sleep_ms;
+//! use std::thread::sleep;
+//! use std::time::Duration;
 //!
 //! fn main() {
 //!     let my_led = Pin::new(127); // number depends on chip, etc.
 //!     my_led.with_exported(|| {
 //!         loop {
 //!             my_led.set_value(0).unwrap();
-//!             sleep_ms(200);
+//!             sleep(Duration::from_millis(200));
 //!             my_led.set_value(1).unwrap();
-//!             sleep_ms(200);
+//!             sleep(Duration::from_millis(200));
 //!         }
 //!     }).unwrap();
 //! }
 //! ```
 
 extern crate nix;
+extern crate regex;
 
 use nix::sys::epoll::*;
 use nix::unistd::close;
@@ -53,6 +55,7 @@ use std::os::unix::prelude::*;
 use std::io::{self, SeekFrom};
 use std::fs;
 use std::fs::File;
+use std::path::{Path, PathBuf};
 
 mod error;
 pub use error::Error;
@@ -131,6 +134,55 @@ impl Pin {
     /// This function does not export the provided pin_num.
     pub fn new(pin_num: u64) -> Pin {
         Pin { pin_num: pin_num }
+    }
+
+    /// Create a new Pin with the provided path
+    ///
+    /// This form is useful when there are other scripts which may
+    /// have already exported the GPIO and created a symlink with a
+    /// nice name that you already have reference to.  Otherwise, it
+    /// is generally preferrable to use `new` directly.
+    ///
+    /// The provided path must be either the already exported
+    /// directory for a GPIO or a symlink to one.  If the directory
+    /// does not look sufficiently like this (i.e. does not resolve to
+    /// a path starting with /sys/class/gpioXXX), then this function
+    /// will return an error.
+    pub fn from_path<T: AsRef<Path>>(path: T) -> Result<Pin> {
+        // TODO: use something like realpath once available.
+        // See https://github.com/rust-lang/rfcs/issues/939 and
+        // https://github.com/rust-lang/rust/issues/11857
+        let mut pb = PathBuf::from(path.as_ref());
+        while try!(fs::metadata(&pb)).file_type().is_symlink() {
+            pb = try!(fs::read_link(pb));
+        }
+
+        // determine if this is valid and figure out the pin_num
+        if !try!(fs::metadata(&pb)).is_dir() {
+            return Err(Error::Unexpected(format!("Provided path not a directory or symlink to \
+                                                  a directory")));
+        }
+
+        let re = regex::Regex::new(r"^/sys/class/gpio/gpio(\d+)$").unwrap();
+        let caps = match re.captures(pb.to_str().unwrap_or("")) {
+            Some(cap) => cap,
+            None => return Err(Error::InvalidPath(format!("{:?}", pb))),
+        };
+
+        let num: u64 = match caps.at(1) {
+            Some(num) => match num.parse() {
+                Ok(unum) => unum,
+                Err(_) => return Err(Error::InvalidPath(format!("{:?}", pb))),
+            },
+            None => return Err(Error::InvalidPath(format!("{:?}", pb))),
+        };
+
+        Ok(Pin::new(num))
+    }
+
+    /// Get the pin number
+    pub fn get_pin_num(&self) -> u64 {
+        self.pin_num
     }
 
     /// Run a closure with the GPIO exported

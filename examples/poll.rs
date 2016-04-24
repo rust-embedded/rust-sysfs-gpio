@@ -10,7 +10,8 @@ extern crate sysfs_gpio;
 
 use sysfs_gpio::{Direction, Pin};
 use std::env;
-use std::thread::sleep_ms;
+use std::thread::sleep;
+use std::time::Duration;
 
 fn poll(pin_num: u64) -> sysfs_gpio::Result<()> {
     // NOTE: this currently runs forever and as such if
@@ -33,7 +34,7 @@ fn poll(pin_num: u64) -> sysfs_gpio::Result<()> {
                          });
                 prev_val = val;
             }
-            sleep_ms(10);
+            sleep(Duration::from_millis(10));
         }
     })
 }
