@@ -15,6 +15,11 @@ Many devices such as the Raspberry Pi or Beaglebone Black provide
 userspace access to a number of GPIO peripherals.  The standard kernel
 API for providing access to these GPIOs is via sysfs.
 
+You might want to also check out the
+[gpio-utils Project](https://github.com/rust-embedded/gpio-utils) for a
+convenient way to associate names with pins and export them as part of system
+boot.  That project uses this library.
+
 Install/Use
 -----------
 
@@ -61,6 +66,7 @@ More Examples:
 - [Blink an LED](examples/blinky.rs)
 - [Poll a GPIO Input](examples/poll.rs)
 - [Receive interrupt on GPIO Change](examples/interrupt.rs)
+- [gpio-utils Project (uses most features)](https://github.com/rust-embedded/gpio-utils)
 
 Features
 --------
