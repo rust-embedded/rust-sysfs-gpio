@@ -87,17 +87,8 @@ Cross Compiling
 
 Most likely, the machine you are running on is not your development
 machine (although it could be).  In those cases, you will need to
-cross-compile.  The following basic instructions should work for the
-raspberry pi or beaglebone black:
-
-1. Install rust and cargo
-2. Install an appropriate cross compiler.  On an Ubuntu system, this
-   can be done by doing `sudo apt-get install g++-arm-linux-gnueabihf`.
-3. Build or install rust for your target.  For some hints, check out
-   https://github.com/japaric/rust-cross.
-4. Tell cargo how to link by adding the lines below to your
-   ~/.cargo/config file.
-5. Run your build `cargo build --target=arm-unknown-linux-gnueabihf`.
+cross-compile.  The [rust-cross guide](https://github.com/japaric/rust-cross)
+provides excellent, detailed instructions for cross-compiling.
 
 Running the Example
 -------------------
