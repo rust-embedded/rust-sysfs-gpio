@@ -26,9 +26,5 @@ after_success: ! '[ $TRAVIS_BRANCH = master ] && [ $TRAVIS_PULL_REQUEST = false 
   && ghp-import -n target/doc
   && git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages'
 
-branches:
-  only:
-    - auto
-
 notifications:
   webhooks: http://rust-embedded-bot.herokuapp.com/travis
