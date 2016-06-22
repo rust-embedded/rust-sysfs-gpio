@@ -1,5 +1,14 @@
 # Change Log
 
+## [0.4.3] - 2016-06-22
+
+### Changed
+
+- Added `from_path` constructor to allow for use of the library with symlinked
+  GPIOs to interact with things like the IOs exported by
+  [gpio-utils](https://github.com/rust-embedded/gpio-utils).
+- Bumped Nix dependency to version 0.6.0 (removes some compile warnings)
+
 ## [0.4.2] - 2016-04-17
 
 ### Changed
