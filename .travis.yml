@@ -5,26 +5,37 @@ rust:
   - 1.5.0
   - 1.6.0
   - 1.7.0
+  - 1.8.0
   - stable
   - beta
   - nightly
 
+addons:
+  apt:
+    packages:
+      - libcurl4-openssl-dev
+      - libelf-dev
+      - libdw-dev
+      - binutils-dev
+
+before_script:
+  - pip install 'travis-cargo<0.2' --user
+
 env:
   global:
-    - secure: "KqhgPk6Hy0m37r27fy5ai5DxWN+XP72Zz/oWqWqpIQowIIPI2X0FvmEUEflWim++8KB6CD3l5e61ZpO+Cyp+K1JQBplyVPYvJeLV+2CGeRCcaIgjBx2hkJtI3J9pnyr4hbY5DUL0AodgxuOke7t7i9fZz9X6K9fWjco7sn2mfz4="
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=""
+    - PATH=$HOME/.local/bin:$PATH
+    - secure: "Ez5eIIgmsfNoV9NQ9H6KrAYX/Dxx6EUQEyyLMoSFvgJuMaPsyWlsDQDKbl9G+aNDNdSWYtYVFc4/fCW+H7a13HjVwB2CH2mChHSeguO8FSAkWns8tkZ+71SKL5/hg3Ig2m+kvfDjjV1O8seFEgTDP3enHFoRTmBSZHeNryo1ITM="
 
 script:
-  - cargo build --verbose
-  - cargo test --verbose
-  - cargo doc
+  - |
+    travis-cargo build &&
+    travis-cargo test &&
+    travis-cargo --only stable doc
 
-# Publish documentation on successfull master build
-# using the ghp-import python package
-after_success: ! '[ $TRAVIS_BRANCH = master ] && [ $TRAVIS_PULL_REQUEST = false ]
-  && echo "<meta http-equiv=refresh content=0;url=sysfs_gpio/index.html>" > target/doc/index.html
-  && sudo pip install ghp-import
-  && ghp-import -n target/doc
-  && git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages'
+after_success:
+  - travis-cargo --only stable doc-upload
+  - travis-cargo coveralls --no-sudo --verify
 
 notifications:
   webhooks: http://rust-embedded-bot.herokuapp.com/travis
