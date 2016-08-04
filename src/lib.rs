@@ -158,7 +158,7 @@ impl Pin {
                                                   a directory")));
         }
 
-        let re = regex::Regex::new(r"^/sys/class/gpio/gpio(\d+)$").unwrap();
+        let re = regex::Regex::new(r"^/sys/.*?/gpio/gpio(\d+)$").unwrap();
         let caps = match re.captures(pb.to_str().unwrap_or("")) {
             Some(cap) => cap,
             None => return Err(Error::InvalidPath(format!("{:?}", pb))),
