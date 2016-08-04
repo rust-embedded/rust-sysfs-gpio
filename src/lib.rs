@@ -55,7 +55,7 @@ use std::os::unix::prelude::*;
 use std::io::{self, SeekFrom};
 use std::fs;
 use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 mod error;
 pub use error::Error;
@@ -149,13 +149,8 @@ impl Pin {
     /// a path starting with /sys/class/gpioXXX), then this function
     /// will return an error.
     pub fn from_path<T: AsRef<Path>>(path: T) -> Result<Pin> {
-        // TODO: use something like realpath once available.
-        // See https://github.com/rust-lang/rfcs/issues/939 and
-        // https://github.com/rust-lang/rust/issues/11857
-        let mut pb = PathBuf::from(path.as_ref());
-        while try!(fs::metadata(&pb)).file_type().is_symlink() {
-            pb = try!(fs::read_link(pb));
-        }
+        // Resolve all symbolic links in the provided path
+        let pb = try!(fs::canonicalize(path.as_ref()));
 
         // determine if this is valid and figure out the pin_num
         if !try!(fs::metadata(&pb)).is_dir() {
