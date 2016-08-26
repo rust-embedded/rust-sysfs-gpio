@@ -1,6 +1,6 @@
 [package]
 name = "sysfs_gpio"
-version = "0.4.3"
+version = "0.4.4"
 authors = ["Paul Osborne <osbpau@gmail.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-embedded/rust-sysfs-gpio"
@@ -16,5 +16,5 @@ See https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
 """
 
 [dependencies]
-nix = "^0.6.0"
-regex = "^0.1.0"
+nix = "0.6.0"
+regex = "0.1.0"

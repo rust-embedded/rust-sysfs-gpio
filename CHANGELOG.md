@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.4.4] - 2016-08-26
+
+### Fixed
+
+- A couple issues were fixed that limited the circumstances where
+  `Pin::from_path` would work in various environments.
+
 ## [0.4.3] - 2016-06-22
 
 ### Changed
@@ -123,7 +130,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[unreleased]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.2...HEAD
+[0.4.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.3...0.4.4
+[0.4.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.3...0.4.0
