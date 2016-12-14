@@ -1,6 +1,6 @@
 [package]
 name = "sysfs_gpio"
-version = "0.4.4"
+version = "0.5.0"
 authors = ["Paul Osborne <osbpau@gmail.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-embedded/rust-sysfs-gpio"
@@ -15,6 +15,13 @@ interrupts) GPIOs from userspace.
 See https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
 """
 
+[features]
+mio-evented = ["mio"]
+tokio = ["futures", "tokio-core", "mio-evented"]
+
 [dependencies]
+futures = { version = "0.1", optional = true }
 nix = "0.6.0"
 regex = "0.1.0"
+mio = { version = "0.6", optional = true }
+tokio-core = { version = "0.1", optional = true }

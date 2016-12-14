@@ -1,7 +1,7 @@
 language: rust
 sudo: false
 rust:
-  - 1.5.0
+  - 1.10.0
   - stable
   - beta
   - nightly
@@ -25,9 +25,13 @@ env:
 
 script:
   - |
-    travis-cargo build &&
-    travis-cargo test &&
-    travis-cargo --only stable doc
+    travis-cargo build -- --features=tokio &&
+    travis-cargo test -- --features=tokio &&
+    travis-cargo build -- --features=mio-evented &&
+    travis-cargo test -- --features=mio-evented &&
+    travis-cargo build -- &&
+    travis-cargo test -- &&
+    travis-cargo --only stable doc -- --features=tokio
 
 after_success:
   - travis-cargo --only stable doc-upload

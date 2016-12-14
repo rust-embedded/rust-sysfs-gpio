@@ -44,8 +44,22 @@
 //! }
 //! ```
 
+#[cfg(feature = "tokio")]
+extern crate futures;
+#[cfg(feature = "mio-evented")]
+extern crate mio;
 extern crate nix;
 extern crate regex;
+#[cfg(feature = "tokio")]
+extern crate tokio_core;
+
+#[cfg(feature = "tokio")]
+use futures::{Async, Poll, Stream};
+
+#[cfg(feature = "mio-evented")]
+use mio::Evented;
+#[cfg(feature = "mio-evented")]
+use mio::unix::EventedFd;
 
 use nix::sys::epoll::*;
 use nix::unistd::close;
@@ -56,6 +70,9 @@ use std::io::{self, SeekFrom};
 use std::fs;
 use std::fs::File;
 use std::path::Path;
+
+#[cfg(feature = "tokio")]
+use tokio_core::reactor::{Handle, PollEvented};
 
 mod error;
 pub use error::Error;
@@ -395,6 +412,44 @@ impl Pin {
     pub fn get_poller(&self) -> Result<PinPoller> {
         PinPoller::new(self.pin_num)
     }
+
+    /// Get an AsyncPinPoller object for this pin
+    ///
+    /// The async pin poller object can be used with the `mio` crate. You should probably call
+    /// `set_edge()` before using this.
+    ///
+    /// This method is only available when the `mio-evented` crate feature is enabled.
+    #[cfg(feature = "mio-evented")]
+    pub fn get_async_poller(&self) -> Result<AsyncPinPoller> {
+        AsyncPinPoller::new(self.pin_num)
+    }
+
+    /// Get a Stream of pin interrupts for this pin
+    ///
+    /// The PinStream object can be used with the `tokio-core` crate. You should probably call
+    /// `set_edge()` before using this.
+    ///
+    /// This method is only available when the `tokio` crate feature is enabled.
+    #[cfg(feature = "tokio")]
+    pub fn get_stream(&self, handle: &Handle) -> Result<PinStream> {
+        PinStream::init(self.clone(), handle)
+    }
+
+    /// Get a Stream of pin values for this pin
+    ///
+    /// The PinStream object can be used with the `tokio-core` crate. You should probably call
+    /// `set_edge(Edge::BothEdges)` before using this.
+    ///
+    /// Note that the values produced are the value of the pin as soon as we get to handling the
+    /// interrupt in userspace.  Each time this stream produces a value, a change has occurred, but
+    /// it could end up producing the same value multiple times if the value has changed back
+    /// between when the interrupt occurred and when the value was read.
+    ///
+    /// This method is only available when the `tokio` crate feature is enabled.
+    #[cfg(feature = "tokio")]
+    pub fn get_value_stream(&self, handle: &Handle) -> Result<PinValueStream> {
+        Ok(PinValueStream(try!(PinStream::init(self.clone(), handle))))
+    }
 }
 
 #[derive(Debug)]
@@ -445,9 +500,9 @@ impl PinPoller {
     /// of interrupts which may result in this call returning
     /// may be configured by calling `set_edge()` prior to
     /// making this call.  This call makes use of epoll under the
-    /// covers.  If it is desirable to poll on multiple GPIOs or
-    /// other event source, you will need to implement that logic
-    /// yourself.
+    /// covers.  To poll on multiple GPIOs or other event sources,
+    /// poll asynchronously using the integration with either `mio`
+    /// or `tokio_core`.
     ///
     /// This function will return Some(value) of the pin if a change is
     /// detected or None if a timeout occurs.  Note that the value provided
@@ -477,5 +532,110 @@ impl Drop for PinPoller {
         // it does not implement drop itself.  This is similar to
         // how mio works
         close(self.epoll_fd).unwrap();  // panic! if close files
+    }
+}
+
+#[cfg(feature = "mio-evented")]
+#[derive(Debug)]
+pub struct AsyncPinPoller {
+    devfile: File,
+}
+
+#[cfg(feature = "mio-evented")]
+impl AsyncPinPoller {
+    fn new(pin_num: u64) -> Result<Self> {
+        let devfile = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num)));
+        Ok(AsyncPinPoller { devfile: devfile })
+    }
+}
+
+#[cfg(feature = "mio-evented")]
+impl Evented for AsyncPinPoller {
+    fn register(&self,
+                poll: &mio::Poll,
+                token: mio::Token,
+                interest: mio::Ready,
+                opts: mio::PollOpt)
+                -> io::Result<()> {
+        EventedFd(&self.devfile.as_raw_fd()).register(poll, token, interest, opts)
+    }
+
+    fn reregister(&self,
+                  poll: &mio::Poll,
+                  token: mio::Token,
+                  interest: mio::Ready,
+                  opts: mio::PollOpt)
+                  -> io::Result<()> {
+        EventedFd(&self.devfile.as_raw_fd()).reregister(poll, token, interest, opts)
+    }
+
+    fn deregister(&self, poll: &mio::Poll) -> io::Result<()> {
+        EventedFd(&self.devfile.as_raw_fd()).deregister(poll)
+    }
+}
+
+#[cfg(feature = "tokio")]
+pub struct PinStream {
+    evented: PollEvented<AsyncPinPoller>,
+    skipped_first_event: bool,
+}
+
+#[cfg(feature = "tokio")]
+impl PinStream {
+    pub fn init(pin: Pin, handle: &Handle) -> Result<Self> {
+        Ok(PinStream {
+            evented: try!(PollEvented::new(try!(pin.get_async_poller()), &handle)),
+            skipped_first_event: false,
+        })
+    }
+}
+
+#[cfg(feature = "tokio")]
+impl Stream for PinStream {
+    type Item = ();
+    type Error = Error;
+
+    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
+        Ok(match self.evented.poll_read() {
+            Async::Ready(()) => {
+                self.evented.need_read();
+                if self.skipped_first_event {
+                    Async::Ready(Some(()))
+                } else {
+                    self.skipped_first_event = true;
+                    Async::NotReady
+                }
+            }
+            Async::NotReady => Async::NotReady,
+        })
+    }
+}
+
+#[cfg(feature = "tokio")]
+pub struct PinValueStream(PinStream);
+
+#[cfg(feature = "tokio")]
+impl PinValueStream {
+    #[inline]
+    fn get_value(&mut self) -> Result<u8> {
+        get_value_from_file(&mut self.0.evented.get_mut().devfile)
+    }
+}
+
+#[cfg(feature = "tokio")]
+impl Stream for PinValueStream {
+    type Item = u8;
+    type Error = Error;
+
+    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
+        match self.0.poll() {
+            Ok(Async::Ready(Some(()))) => {
+                let value = try!(self.get_value());
+                Ok(Async::Ready(Some(value)))
+            }
+            Ok(Async::Ready(None)) => Ok(Async::Ready(None)),
+            Ok(Async::NotReady) => Ok(Async::NotReady),
+            Err(e) => Err(e),
+        }
     }
 }
