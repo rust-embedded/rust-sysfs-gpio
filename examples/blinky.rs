@@ -24,6 +24,10 @@ struct Arguments {
 fn blink_my_led(led: u64, duration_ms: u64, period_ms: u64) -> sysfs_gpio::Result<()> {
     let my_led = Pin::new(led);
     my_led.with_exported(|| {
+        // There is a known issue on Raspberry Pi with this.
+        // The exported GPIO doesn't have correct permissions
+        // immediatelly.
+        // Try adding sleep(Duration::from_millis(200)) here.
         try!(my_led.set_direction(Direction::Low));
         let iterations = duration_ms / period_ms / 2;
         for _ in 0..iterations {

@@ -34,6 +34,10 @@
 //! fn main() {
 //!     let my_led = Pin::new(127); // number depends on chip, etc.
 //!     my_led.with_exported(|| {
+//!         // There is a known issue on Raspberry Pi with this.
+//!         // The exported GPIO doesn't have correct permissions
+//!         // immediatelly.
+//!         // Try adding sleep(Duration::from_millis(200)) here.
 //!         loop {
 //!             my_led.set_value(0).unwrap();
 //!             sleep(Duration::from_millis(200));
@@ -186,6 +190,12 @@ impl Pin {
     /// will be exported.  After the closure execution is complete,
     /// the GPIO will be unexported.
     ///
+    /// # Warning
+    ///
+    /// There is a known issue in case of Raspberry Pi. The
+    /// exported pin gets right permissions only after some tim passes.
+    /// Try adding some sleep at the beginning of the closure to work-around this.
+    ///
     /// # Example
     ///
     /// ```no_run
@@ -238,6 +248,12 @@ impl Pin {
     /// 2. The requested GPIO is out of range and cannot be exported
     /// 3. The requested GPIO is in use by the kernel and cannot
     ///    be exported by use in userspace
+    ///
+    /// # Warning
+    ///
+    /// There is a known issue in case of Raspberry Pi. The
+    /// exported pin gets right permissions only after some tim passes.
+    /// Try adding some sleep right-after this call to work-around this.
     ///
     /// # Example
     /// ```no_run
