@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.5.0] - 2016-12-18
+
+### Changed
+
+- Support for asynchronous polling for changes using tokio/futures
+  is now supported.
+- Minimum supported version Rust for 0.5.0+ is now 1.10.0
+
 ## [0.4.4] - 2016-08-26
 
 ### Fixed
@@ -130,7 +138,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[0.4.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.3...0.4.4
+[0.5.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.4...0.5.0
+[0.4.4]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.3...0.4.4
 [0.4.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.2...0.4.3
 [0.4.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.1...0.4.2
 [0.4.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.0...0.4.1
