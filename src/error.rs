@@ -10,6 +10,8 @@ pub enum Error {
     Unexpected(String),
     /// Invalid Path
     InvalidPath(String),
+    /// Operation not supported on target os
+    Unsupported(String),
 }
 
 impl ::std::error::Error for Error {
@@ -18,6 +20,7 @@ impl ::std::error::Error for Error {
             Error::Io(ref e) => e.description(),
             Error::Unexpected(_) => "An Unexpected Error Occurred",
             Error::InvalidPath(_) => "A Provided Path was invalid",
+            Error::Unsupported(_) => "Operation is not supported on target os",
         }
     }
 
@@ -35,6 +38,7 @@ impl fmt::Display for Error {
             Error::Io(ref e) => e.fmt(f),
             Error::Unexpected(ref s) => write!(f, "Unexpected: {}", s),
             Error::InvalidPath(ref s) => write!(f, "Invalid Path: {}", s),
+            Error::Unsupported(ref s) => write!(f, "Operation not supported on target os: {}", s),
         }
     }
 }
