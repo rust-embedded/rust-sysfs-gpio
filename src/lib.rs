@@ -61,6 +61,7 @@ use mio::Evented;
 #[cfg(feature = "mio-evented")]
 use mio::unix::EventedFd;
 
+#[cfg(any(target_os = "linux", target_os = "android"))]
 use nix::sys::epoll::*;
 use nix::unistd::close;
 
@@ -469,6 +470,7 @@ impl PinPoller {
     }
 
     /// Create a new PinPoller for the provided pin number
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     pub fn new(pin_num: u64) -> Result<PinPoller> {
         let devfile: File = try!(File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num)));
         let devfile_fd = devfile.as_raw_fd();
@@ -494,6 +496,11 @@ impl PinPoller {
         }
     }
 
+    #[cfg(not(any(target_os = "linux", target_os = "android")))]
+    pub fn new(pin_num: u64) -> Result<PinPoller> {
+        Err(Error::Unsupported("PinPoller".into()))
+    }
+
     /// Block until an interrupt occurs
     ///
     /// This call will block until an interrupt occurs.  The types
@@ -511,6 +518,7 @@ impl PinPoller {
     /// has occurred, but you could end up reading the same value multiple
     /// times as the value has changed back between when the interrupt
     /// occurred and the current time.
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     pub fn poll(&mut self, timeout_ms: isize) -> Result<Option<u8>> {
         try!(flush_input_from_file(&mut self.devfile, 255));
         let dummy_event = EpollEvent {
@@ -523,6 +531,11 @@ impl PinPoller {
             0 => None, // timeout
             _ => Some(try!(get_value_from_file(&mut self.devfile))),
         })
+    }
+
+    #[cfg(not(any(target_os = "linux", target_os = "android")))]
+    pub fn poll(&mut self, timeout_ms: isize) -> Result<Option<u8>> {
+        Err(Error::Unsupported("PinPoller".into()))
     }
 }
 
