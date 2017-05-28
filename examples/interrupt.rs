@@ -24,7 +24,7 @@ fn interrupt(pin: u64) -> sysfs_gpio::Result<()> {
                 Some(value) => println!("{}", value),
                 None => {
                     let mut stdout = stdout();
-                    try!(stdout.write(b"."));
+                    try!(stdout.write_all(b"."));
                     try!(stdout.flush());
                 }
             }

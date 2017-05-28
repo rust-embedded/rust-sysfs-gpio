@@ -172,8 +172,8 @@ impl Pin {
 
         // determine if this is valid and figure out the pin_num
         if !try!(fs::metadata(&pb)).is_dir() {
-            return Err(Error::Unexpected(format!("Provided path not a directory or symlink to \
-                                                  a directory")));
+            return Err(Error::Unexpected("Provided path not a directory or symlink to \
+                                          a directory".to_owned()));
         }
 
         let re = regex::Regex::new(r"^/sys/.*?/gpio/gpio(\d+)$").unwrap();
@@ -268,7 +268,7 @@ impl Pin {
     /// }
     /// ```
     pub fn export(&self) -> Result<()> {
-        if let Err(_) = fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
+        if fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)).is_err() {
             let mut export_file = try!(File::create("/sys/class/gpio/export"));
             try!(export_file.write_all(format!("{}", self.pin_num).as_bytes()));
         }
@@ -282,7 +282,7 @@ impl Pin {
     /// exported, it will return without error.  That is, whenever
     /// this function returns Ok, the GPIO is not exported.
     pub fn unexport(&self) -> Result<()> {
-        if let Ok(_) = fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)) {
+        if fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)).is_ok() {
             let mut unexport_file = try!(File::create("/sys/class/gpio/unexport"));
             try!(unexport_file.write_all(format!("{}", self.pin_num).as_bytes()));
         }
