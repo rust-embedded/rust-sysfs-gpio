@@ -29,11 +29,11 @@ fn stream(pin_nums: Vec<u64>) -> sysfs_gpio::Result<()> {
         try!(pin.set_direction(Direction::In));
         try!(pin.set_edge(Edge::BothEdges));
         handle.spawn(try!(pin.get_value_stream(&handle))
-            .for_each(move |val| {
-                println!("Pin {} changed value to {}", i, val);
-                Ok(())
-            })
-            .map_err(|_| ()));
+                         .for_each(move |val| {
+                                       println!("Pin {} changed value to {}", i, val);
+                                       Ok(())
+                                   })
+                         .map_err(|_| ()));
     }
     // Wait forever for events
     loop {
