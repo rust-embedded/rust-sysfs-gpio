@@ -78,12 +78,12 @@ use tokio_core::reactor::{Handle, PollEvented};
 mod error;
 pub use error::Error;
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Pin {
     pin_num: u64,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Direction {
     In,
     Out,
@@ -91,7 +91,7 @@ pub enum Direction {
     Low,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Edge {
     NoInterrupt,
     RisingEdge,
