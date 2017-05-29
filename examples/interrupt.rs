@@ -16,16 +16,16 @@ use std::io::stdout;
 fn interrupt(pin: u64) -> sysfs_gpio::Result<()> {
     let input = Pin::new(pin);
     input.with_exported(|| {
-        try!(input.set_direction(Direction::In));
-        try!(input.set_edge(Edge::BothEdges));
-        let mut poller = try!(input.get_poller());
+        input.set_direction(Direction::In)?;
+        input.set_edge(Edge::BothEdges)?;
+        let mut poller = input.get_poller()?;
         loop {
-            match try!(poller.poll(1000)) {
+            match poller.poll(1000)? {
                 Some(value) => println!("{}", value),
                 None => {
                     let mut stdout = stdout();
-                    try!(stdout.write_all(b"."));
-                    try!(stdout.flush());
+                    stdout.write_all(b".")?;
+                    stdout.flush()?;
                 }
             }
         }
