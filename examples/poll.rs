@@ -26,12 +26,7 @@ fn poll(pin_num: u64) -> sysfs_gpio::Result<()> {
         loop {
             let val = try!(input.get_value());
             if val != prev_val {
-                println!("Pin State: {}",
-                         if val == 0 {
-                             "Low"
-                         } else {
-                             "High"
-                         });
+                println!("Pin State: {}", if val == 0 { "Low" } else { "High" });
                 prev_val = val;
             }
             sleep(Duration::from_millis(10));

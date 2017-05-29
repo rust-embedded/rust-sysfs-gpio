@@ -183,10 +183,12 @@ impl Pin {
         };
 
         let num: u64 = match caps.at(1) {
-            Some(num) => match num.parse() {
-                Ok(unum) => unum,
-                Err(_) => return Err(Error::InvalidPath(format!("{:?}", pb))),
-            },
+            Some(num) => {
+                match num.parse() {
+                    Ok(unum) => unum,
+                    Err(_) => return Err(Error::InvalidPath(format!("{:?}", pb))),
+                }
+            }
             None => return Err(Error::InvalidPath(format!("{:?}", pb))),
         };
 
@@ -324,13 +326,12 @@ impl Pin {
     /// not support changing the direction of a pin in userspace.  If
     /// this is the case, you will get an error.
     pub fn set_direction(&self, dir: Direction) -> Result<()> {
-        try!(self.write_to_device_file("direction",
-                                       match dir {
-                                           Direction::In => "in",
-                                           Direction::Out => "out",
-                                           Direction::High => "high",
-                                           Direction::Low => "low",
-                                       }));
+        try!(self.write_to_device_file("direction", match dir {
+            Direction::In => "in",
+            Direction::Out => "out",
+            Direction::High => "high",
+            Direction::Low => "low",
+        }));
 
         Ok(())
     }
@@ -360,11 +361,10 @@ impl Pin {
     /// A 0 value will set the pin low and any other value will
     /// set the pin high (1 is typical).
     pub fn set_value(&self, value: u8) -> Result<()> {
-        try!(self.write_to_device_file("value",
-                                       match value {
-                                           0 => "0",
-                                           _ => "1",
-                                       }));
+        try!(self.write_to_device_file("value", match value {
+            0 => "0",
+            _ => "1",
+        }));
 
         Ok(())
     }
@@ -394,13 +394,12 @@ impl Pin {
     /// result in `poll()` returning.  This call will return an Error
     /// if the pin does not allow interrupts.
     pub fn set_edge(&self, edge: Edge) -> Result<()> {
-        try!(self.write_to_device_file("edge",
-                                       match edge {
-                                           Edge::NoInterrupt => "none",
-                                           Edge::RisingEdge => "rising",
-                                           Edge::FallingEdge => "falling",
-                                           Edge::BothEdges => "both",
-                                       }));
+        try!(self.write_to_device_file("edge", match edge {
+            Edge::NoInterrupt => "none",
+            Edge::RisingEdge => "rising",
+            Edge::FallingEdge => "falling",
+            Edge::BothEdges => "both",
+        }));
 
         Ok(())
     }
@@ -484,10 +483,10 @@ impl PinPoller {
         match epoll_ctl(epoll_fd, EpollOp::EpollCtlAdd, devfile_fd, &info) {
             Ok(_) => {
                 Ok(PinPoller {
-                    pin_num: pin_num,
-                    devfile: devfile,
-                    epoll_fd: epoll_fd,
-                })
+                       pin_num: pin_num,
+                       devfile: devfile,
+                       epoll_fd: epoll_fd,
+                   })
             }
             Err(err) => {
                 let _ = close(epoll_fd); // cleanup
@@ -528,9 +527,9 @@ impl PinPoller {
         let mut events: [EpollEvent; 1] = [dummy_event];
         let cnt = try!(epoll_wait(self.epoll_fd, &mut events, timeout_ms));
         Ok(match cnt {
-            0 => None, // timeout
-            _ => Some(try!(get_value_from_file(&mut self.devfile))),
-        })
+               0 => None, // timeout
+               _ => Some(try!(get_value_from_file(&mut self.devfile))),
+           })
     }
 
     #[cfg(not(any(target_os = "linux", target_os = "android")))]
@@ -544,7 +543,7 @@ impl Drop for PinPoller {
         // we implement drop to close the underlying epoll fd as
         // it does not implement drop itself.  This is similar to
         // how mio works
-        close(self.epoll_fd).unwrap();  // panic! if close files
+        close(self.epoll_fd).unwrap(); // panic! if close files
     }
 }
 
@@ -597,9 +596,9 @@ pub struct PinStream {
 impl PinStream {
     pub fn init(pin: Pin, handle: &Handle) -> Result<Self> {
         Ok(PinStream {
-            evented: try!(PollEvented::new(try!(pin.get_async_poller()), &handle)),
-            skipped_first_event: false,
-        })
+               evented: try!(PollEvented::new(try!(pin.get_async_poller()), &handle)),
+               skipped_first_event: false,
+           })
     }
 }
 
@@ -610,7 +609,7 @@ impl Stream for PinStream {
 
     fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
         Ok(match self.evented.poll_read() {
-            Async::Ready(()) => {
+               Async::Ready(()) => {
                 self.evented.need_read();
                 if self.skipped_first_event {
                     Async::Ready(Some(()))
@@ -619,8 +618,8 @@ impl Stream for PinStream {
                     Async::NotReady
                 }
             }
-            Async::NotReady => Async::NotReady,
-        })
+               Async::NotReady => Async::NotReady,
+           })
     }
 }
 
