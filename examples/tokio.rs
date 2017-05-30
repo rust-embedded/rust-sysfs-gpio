@@ -22,18 +22,18 @@ fn stream(pin_nums: Vec<u64>) -> sysfs_gpio::Result<()> {
     // can be done about this as Rust signal handling isn't
     // really present at the moment.  Revisit later.
     let pins: Vec<_> = pin_nums.iter().map(|&p| (p, Pin::new(p))).collect();
-    let mut l = try!(Core::new());
+    let mut l = Core::new()?;
     let handle = l.handle();
     for &(i, ref pin) in pins.iter() {
-        try!(pin.export());
-        try!(pin.set_direction(Direction::In));
-        try!(pin.set_edge(Edge::BothEdges));
-        handle.spawn(try!(pin.get_value_stream(&handle))
-            .for_each(move |val| {
-                println!("Pin {} changed value to {}", i, val);
-                Ok(())
-            })
-            .map_err(|_| ()));
+        pin.export()?;
+        pin.set_direction(Direction::In)?;
+        pin.set_edge(Edge::BothEdges)?;
+        handle.spawn(pin.get_value_stream(&handle)?
+                         .for_each(move |val| {
+                                       println!("Pin {} changed value to {}", i, val);
+                                       Ok(())
+                                   })
+                         .map_err(|_| ()));
     }
     // Wait forever for events
     loop {

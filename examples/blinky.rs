@@ -23,15 +23,15 @@ struct Arguments {
 fn blink_my_led(led: u64, duration_ms: u64, period_ms: u64) -> sysfs_gpio::Result<()> {
     let my_led = Pin::new(led);
     my_led.with_exported(|| {
-        try!(my_led.set_direction(Direction::Low));
+        my_led.set_direction(Direction::Low)?;
         let iterations = duration_ms / period_ms / 2;
         for _ in 0..iterations {
-            try!(my_led.set_value(0));
+            my_led.set_value(0)?;
             sleep(Duration::from_millis(period_ms));
-            try!(my_led.set_value(1));
+            my_led.set_value(1)?;
             sleep(Duration::from_millis(period_ms));
         }
-        try!(my_led.set_value(0));
+        my_led.set_value(0)?;
         Ok(())
     })
 }
@@ -58,10 +58,10 @@ fn get_args() -> Option<Arguments> {
         Err(_) => return None,
     };
     Some(Arguments {
-        pin: pin,
-        duration_ms: duration_ms,
-        period_ms: period_ms,
-    })
+             pin: pin,
+             duration_ms: duration_ms,
+             period_ms: period_ms,
+         })
 }
 
 fn main() {
