@@ -49,7 +49,6 @@ extern crate futures;
 #[cfg(feature = "mio-evented")]
 extern crate mio;
 extern crate nix;
-extern crate regex;
 #[cfg(feature = "tokio")]
 extern crate tokio_core;
 
@@ -177,23 +176,49 @@ impl Pin {
                                                  .to_owned()));
         }
 
-        let re = regex::Regex::new(r"^/sys/.*?/gpio/gpio(\d+)$").unwrap();
-        let caps = match re.captures(pb.to_str().unwrap_or("")) {
-            Some(cap) => cap,
-            None => return Err(Error::InvalidPath(format!("{:?}", pb))),
-        };
+        let num = Pin::extract_pin_from_path(&pb.to_str().unwrap_or(""))?;
+        Ok(Pin::new(num))
+    }
 
-        let num: u64 = match caps.at(1) {
-            Some(num) => {
-                match num.parse() {
-                    Ok(unum) => unum,
-                    Err(_) => return Err(Error::InvalidPath(format!("{:?}", pb))),
+    /// Extract pin number from paths like /sys/*/gpio/gpioXXX
+    /// Alternative to regexp r"^/sys/.*?/gpio/gpio(\d+)$"
+    ///
+    /// /// Tests are working only for pub function (do not know how to use doctest for privite one)
+    /// ///```
+    /// use sysfs_gpio::Pin;
+    /// assert_eq!(111, Pin::extract_pin_from_path(&"/sys/WHAT/gpio/gpio111").unwrap());
+    /// assert_eq!(951, Pin::extract_pin_from_path(&"/sys/W-h_0T/gpio/gpio951").unwrap());
+    /// assert_eq!(true, Pin::extract_pin_from_path(&"/sys/is/error/gpio/gpio111").is_err());
+    /// assert_eq!(true ,Pin::extract_pin_from_path(&"/sys/WHAT/gpio/gpio").is_err());
+    /// assert_eq!(true ,Pin::extract_pin_from_path(&"/sys/WHAT/gpio/gpioSDS").is_err());
+    /// assert_eq!(true ,Pin::extract_pin_from_path(&"/sys/WHAT/gpio/gpio0/dd").is_err());
+    /// ///```
+    fn extract_pin_from_path(path:&str) -> Result<u64> {
+        let mut idx = 0;
+        let mut number = "";
+        // Is looks silly but it should be fast :)
+        for z in path.split('/') {
+            println!("P {}", z);
+        }
+        for s in path.split('/') {
+            println!("{} == {}", idx, s);
+            if (idx == 1 && s != "sys") || (idx == 3 && s != "gpio") || idx > 4 {
+                return Err(Error::InvalidPath(format!("{:?}", path)));
+            }
+            if idx == 4 {
+                if s.starts_with("gpio") {
+                    number = s.split_at(4).1;
+                } else {
+                    return Err(Error::InvalidPath(format!("#2{:?}", path)));
                 }
             }
-            None => return Err(Error::InvalidPath(format!("{:?}", pb))),
-        };
-
-        Ok(Pin::new(num))
+            idx +=1;
+        }
+        
+        match number.parse::<u64>() {
+            Ok(unum) => Ok(unum),
+            Err(_) => return Err(Error::InvalidPath(format!("#3{:?}", path))),
+        }
     }
 
     /// Get the pin number
