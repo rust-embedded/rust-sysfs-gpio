@@ -407,6 +407,34 @@ impl Pin {
         Ok(())
     }
 
+    /// Get polarity of the Pin (`true` is active low)
+    pub fn get_active_low(&self) -> Result<bool> {
+        match self.read_from_device_file("active_low") {
+            Ok(s) => {
+                match s.trim() {
+                    "1" => Ok(true),
+                    "0" => Ok(false),
+                    other => Err(Error::Unexpected(format!("active_low file contents {}", other))),
+                }
+            }
+            Err(e) => Err(::std::convert::From::from(e)),
+        }
+    }
+
+    /// Set the polarity of the Pin (`true` is active low)
+    ///
+    /// This will affect "rising" and "falling" edge triggered
+    /// configuration.
+    pub fn set_active_low(&self, active_low: bool) -> Result<()> {
+        self.write_to_device_file("active_low",
+                                  match active_low {
+                                      true => "1",
+                                      false => "0",
+                                  })?;
+
+        Ok(())
+    }
+
     /// Get a PinPoller object for this pin
     ///
     /// This pin poller object will register an interrupt with the
