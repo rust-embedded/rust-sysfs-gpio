@@ -1,7 +1,7 @@
 language: rust
 sudo: false
 rust:
-  - 1.15.0
+  - 1.18.0
   - stable
   - beta
   - nightly
@@ -19,7 +19,7 @@ addons:
       - binutils-dev
 
 before_script:
-  - pip install 'travis-cargo<0.2' --user
+  - pip2 install 'travis-cargo<0.2' --user
 
 env:
   global:
