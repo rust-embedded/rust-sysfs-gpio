@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Statvfs` struct in crate `nix`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Statvfs">
+
+    <title>nix::sys::statvfs::Statvfs - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
+        
+        <p class='location'>Struct Statvfs</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.block_size">block_size</a><a href="#method.fragment_size">fragment_size</a><a href="#method.blocks">blocks</a><a href="#method.blocks_free">blocks_free</a><a href="#method.blocks_available">blocks_available</a><a href="#method.files">files</a><a href="#method.files_free">files_free</a><a href="#method.files_available">files_available</a><a href="#method.filesystem_id">filesystem_id</a><a href="#method.flags">flags</a><a href="#method.name_max">name_max</a></div></div><p class='location'><a href='../../index.html'>nix</a>::<wbr><a href='../index.html'>sys</a>::<wbr><a href='index.html'>statvfs</a></p><script>window.sidebarCurrent = {name: 'Statvfs', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>nix</a>::<wbr><a href='../index.html'>sys</a>::<wbr><a href='index.html'>statvfs</a>::<wbr><a class="struct" href=''>Statvfs</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#60' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'><div class="docblock attributes">#[repr(C)]
+</div>pub struct Statvfs(_);</pre><div class='docblock'><p>Wrapper around the POSIX <code>statvfs</code> struct</p>
+
+<p>For more information see the <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_statvfs.h.html"><code>statvfs(3)</code> man pages</a>.</p>
+</div>
+                    <h2 id='methods' class='small-section-header'>
+                      Methods<a href='#methods' class='anchor'></a>
+                    </h2>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../../../nix/sys/statvfs/struct.Statvfs.html" title="struct nix::sys::statvfs::Statvfs">Statvfs</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#62-120' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.block_size' class="method"><span id='block_size.v' class='invisible'><code>pub fn <a href='#method.block_size' class='fnname'>block_size</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/not_x32/type.c_ulong.html" title="type libc::unix::notbsd::linux::other::b64::not_x32::c_ulong">c_ulong</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#64-66' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>get the file system block size</p>
+</div><h4 id='method.fragment_size' class="method"><span id='fragment_size.v' class='invisible'><code>pub fn <a href='#method.fragment_size' class='fnname'>fragment_size</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/not_x32/type.c_ulong.html" title="type libc::unix::notbsd::linux::other::b64::not_x32::c_ulong">c_ulong</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#69-71' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the fundamental file system block size</p>
+</div><h4 id='method.blocks' class="method"><span id='blocks.v' class='invisible'><code>pub fn <a href='#method.blocks' class='fnname'>blocks</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/type.fsblkcnt_t.html" title="type libc::unix::notbsd::linux::other::b64::fsblkcnt_t">fsblkcnt_t</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#76-78' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the number of blocks.</p>
+
+<p>Units are in units of <code>fragment_size()</code></p>
+</div><h4 id='method.blocks_free' class="method"><span id='blocks_free.v' class='invisible'><code>pub fn <a href='#method.blocks_free' class='fnname'>blocks_free</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/type.fsblkcnt_t.html" title="type libc::unix::notbsd::linux::other::b64::fsblkcnt_t">fsblkcnt_t</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#81-83' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the number of free blocks in the file system</p>
+</div><h4 id='method.blocks_available' class="method"><span id='blocks_available.v' class='invisible'><code>pub fn <a href='#method.blocks_available' class='fnname'>blocks_available</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/type.fsblkcnt_t.html" title="type libc::unix::notbsd::linux::other::b64::fsblkcnt_t">fsblkcnt_t</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#86-88' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the number of free blocks for unprivileged users</p>
+</div><h4 id='method.files' class="method"><span id='files.v' class='invisible'><code>pub fn <a href='#method.files' class='fnname'>files</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/type.fsfilcnt_t.html" title="type libc::unix::notbsd::linux::other::b64::fsfilcnt_t">fsfilcnt_t</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#91-93' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the total number of file inodes</p>
+</div><h4 id='method.files_free' class="method"><span id='files_free.v' class='invisible'><code>pub fn <a href='#method.files_free' class='fnname'>files_free</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/type.fsfilcnt_t.html" title="type libc::unix::notbsd::linux::other::b64::fsfilcnt_t">fsfilcnt_t</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#96-98' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the number of free file inodes</p>
+</div><h4 id='method.files_available' class="method"><span id='files_available.v' class='invisible'><code>pub fn <a href='#method.files_available' class='fnname'>files_available</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/type.fsfilcnt_t.html" title="type libc::unix::notbsd::linux::other::b64::fsfilcnt_t">fsfilcnt_t</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#101-103' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the number of free file inodes for unprivileged users</p>
+</div><h4 id='method.filesystem_id' class="method"><span id='filesystem_id.v' class='invisible'><code>pub fn <a href='#method.filesystem_id' class='fnname'>filesystem_id</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/not_x32/type.c_ulong.html" title="type libc::unix::notbsd::linux::other::b64::not_x32::c_ulong">c_ulong</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#106-108' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the file system id</p>
+</div><h4 id='method.flags' class="method"><span id='flags.v' class='invisible'><code>pub fn <a href='#method.flags' class='fnname'>flags</a>(&amp;self) -&gt; <a class="struct" href="../../../nix/sys/statvfs/struct.FsFlags.html" title="struct nix::sys::statvfs::FsFlags">FsFlags</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#111-113' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the mount flags</p>
+</div><h4 id='method.name_max' class="method"><span id='name_max.v' class='invisible'><code>pub fn <a href='#method.name_max' class='fnname'>name_max</a>(&amp;self) -&gt; <a class="type" href="../../../libc/unix/notbsd/linux/other/b64/not_x32/type.c_ulong.html" title="type libc::unix::notbsd::linux::other::b64::not_x32::c_ulong">c_ulong</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../../src/nix/sys/statvfs.rs.html#116-118' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the maximum filename length</p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>↑</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>↓</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>↹</dt>
+                    <dd>Switch tab</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt style="width:31px;">+ / -</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "nix";
+    </script>
+    <script src="../../../main.js"></script>
+    <script defer src="../../../search-index.js"></script>
+</body>
+</html>

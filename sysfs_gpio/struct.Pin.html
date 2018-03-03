@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Pin` struct in crate `sysfs_gpio`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Pin">
+
+    <title>sysfs_gpio::Pin - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
+        
+        <p class='location'>Struct Pin</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.new">new</a><a href="#method.from_path">from_path</a><a href="#method.get_pin_num">get_pin_num</a><a href="#method.with_exported">with_exported</a><a href="#method.is_exported">is_exported</a><a href="#method.export">export</a><a href="#method.unexport">unexport</a><a href="#method.get_pin">get_pin</a><a href="#method.get_direction">get_direction</a><a href="#method.set_direction">set_direction</a><a href="#method.get_value">get_value</a><a href="#method.set_value">set_value</a><a href="#method.get_edge">get_edge</a><a href="#method.set_edge">set_edge</a><a href="#method.get_active_low">get_active_low</a><a href="#method.set_active_low">set_active_low</a><a href="#method.get_poller">get_poller</a><a href="#method.get_async_poller">get_async_poller</a><a href="#method.get_stream">get_stream</a><a href="#method.get_value_stream">get_value_stream</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Clone">Clone</a><a href="#impl-Copy">Copy</a><a href="#impl-Debug">Debug</a><a href="#impl-PartialEq">PartialEq</a><a href="#impl-Eq">Eq</a></div></div><p class='location'><a href='index.html'>sysfs_gpio</a></p><script>window.sidebarCurrent = {name: 'Pin', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>sysfs_gpio</a>::<wbr><a class="struct" href=''>Pin</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#83-85' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Pin { /* fields omitted */ }</pre>
+                    <h2 id='methods' class='small-section-header'>
+                      Methods<a href='#methods' class='anchor'></a>
+                    </h2>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#134-482' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(pin_num: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#154-156' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Create a new Pin with the provided <code>pin_num</code></p>
+
+<p>This function does not export the provided pin_num.</p>
+</div><h4 id='method.from_path' class="method"><span id='from_path.v' class='invisible'><code>pub fn <a href='#method.from_path' class='fnname'>from_path</a>&lt;T:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;&gt;(path: T) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#170-182' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Create a new Pin with the provided path</p>
+
+<p>This form is useful when there are other scripts which may
+have already exported the GPIO and created a symlink with a
+nice name that you already have reference to.  Otherwise, it
+is generally preferrable to use <code>new</code> directly.</p>
+
+<p>The provided path must be either the already exported
+directory for a GPIO or a symlink to one.  If the directory
+does not look sufficiently like this (i.e. does not resolve to
+a path starting with /sys/class/gpioXXX), then this function
+will return an error.</p>
+</div><h4 id='method.get_pin_num' class="method"><span id='get_pin_num.v' class='invisible'><code>pub fn <a href='#method.get_pin_num' class='fnname'>get_pin_num</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#198-200' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the pin number</p>
+</div><h4 id='method.with_exported' class="method"><span id='with_exported.v' class='invisible'><code>pub fn <a href='#method.with_exported' class='fnname'>with_exported</a>&lt;F:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnOnce.html" title="trait core::ops::function::FnOnce">FnOnce</a>() -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;&gt;(&amp;self, closure: F) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#223-236' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Run a closure with the GPIO exported</p>
+
+<p>Prior to the provided closure being executed, the GPIO
+will be exported.  After the closure execution is complete,
+the GPIO will be unexported.</p>
+
+<h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">sysfs_gpio</span>::{<span class="ident">Pin</span>, <span class="ident">Direction</span>};
+
+<span class="kw">let</span> <span class="ident">gpio</span> <span class="op">=</span> <span class="ident">Pin</span>::<span class="ident">new</span>(<span class="number">24</span>);
+<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">gpio</span>.<span class="ident">with_exported</span>(<span class="op">||</span> {
+    <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;At this point, the Pin is exported&quot;</span>);
+    <span class="macro">try</span><span class="macro">!</span>(<span class="ident">gpio</span>.<span class="ident">set_direction</span>(<span class="ident">Direction</span>::<span class="ident">Low</span>));
+    <span class="macro">try</span><span class="macro">!</span>(<span class="ident">gpio</span>.<span class="ident">set_value</span>(<span class="number">1</span>));
+    <span class="comment">// ...</span>
+    <span class="prelude-val">Ok</span>(())
+});</pre>
+</div><h4 id='method.is_exported' class="method"><span id='is_exported.v' class='invisible'><code>pub fn <a href='#method.is_exported' class='fnname'>is_exported</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#242-244' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Determines whether the GPIO is exported</p>
+
+<p>This function will error out if the kernel does not support the GPIO
+sysfs interface (i.e. <code>/sys/class/gpio</code> does not exist).</p>
+</div><h4 id='method.export' class="method"><span id='export.v' class='invisible'><code>pub fn <a href='#method.export' class='fnname'>export</a>(&amp;self) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#271-278' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Export the GPIO</p>
+
+<p>This is equivalent to <code>echo N &gt; /sys/class/gpio/export</code> with
+the exception that the case where the GPIO is already exported
+is not an error.</p>
+
+<h1 id='errors' class='section-header'><a href='#errors'>Errors</a></h1>
+<p>The main cases in which this function will fail and return an
+error are the following:
+1. The system does not support the GPIO sysfs interface
+2. The requested GPIO is out of range and cannot be exported
+3. The requested GPIO is in use by the kernel and cannot
+   be exported by use in userspace</p>
+
+<h1 id='example-1' class='section-header'><a href='#example-1'>Example</a></h1>
+<pre class="rust rust-example-rendered">
+<span class="kw">use</span> <span class="ident">sysfs_gpio</span>::<span class="ident">Pin</span>;
+
+<span class="kw">let</span> <span class="ident">gpio</span> <span class="op">=</span> <span class="ident">Pin</span>::<span class="ident">new</span>(<span class="number">24</span>);
+<span class="kw">match</span> <span class="ident">gpio</span>.<span class="ident">export</span>() {
+    <span class="prelude-val">Ok</span>(()) <span class="op">=&gt;</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Gpio {} exported!&quot;</span>, <span class="ident">gpio</span>.<span class="ident">get_pin</span>()),
+    <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=&gt;</span> <span class="macro">println</span><span class="macro">!</span>(<span class="string">&quot;Gpio {} could not be exported: {}&quot;</span>, <span class="ident">gpio</span>.<span class="ident">get_pin</span>(), <span class="ident">err</span>),
+}</pre>
+</div><h4 id='method.unexport' class="method"><span id='unexport.v' class='invisible'><code>pub fn <a href='#method.unexport' class='fnname'>unexport</a>(&amp;self) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#286-293' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Unexport the GPIO</p>
+
+<p>This function will unexport the provided by from syfs if
+it is currently exported.  If the pin is not currently
+exported, it will return without error.  That is, whenever
+this function returns Ok, the GPIO is not exported.</p>
+</div><h4 id='method.get_pin' class="method"><span id='get_pin.v' class='invisible'><code>pub fn <a href='#method.get_pin' class='fnname'>get_pin</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#296-298' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the pin number for the Pin</p>
+</div><h4 id='method.get_direction' class="method"><span id='get_direction.v' class='invisible'><code>pub fn <a href='#method.get_direction' class='fnname'>get_direction</a>(&amp;self) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="enum" href="../sysfs_gpio/enum.Direction.html" title="enum sysfs_gpio::Direction">Direction</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#301-314' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the direction of the Pin</p>
+</div><h4 id='method.set_direction' class="method"><span id='set_direction.v' class='invisible'><code>pub fn <a href='#method.set_direction' class='fnname'>set_direction</a>(&amp;self, dir: <a class="enum" href="../sysfs_gpio/enum.Direction.html" title="enum sysfs_gpio::Direction">Direction</a>) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#329-338' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Set this GPIO as either an input or an output</p>
+
+<p>The basic values allowed here are <code>Direction::In</code> and
+<code>Direction::Out</code> which set the Pin as either an input
+or output respectively.  In addition to those, two
+additional settings of <code>Direction::High</code> and
+<code>Direction::Low</code>.  These both set the Pin as an output
+but do so with an initial value of high or low respectively.
+This allows for glitch-free operation.</p>
+
+<p>Note that this entry may not exist if the kernel does
+not support changing the direction of a pin in userspace.  If
+this is the case, you will get an error.</p>
+</div><h4 id='method.get_value' class="method"><span id='get_value.v' class='invisible'><code>pub fn <a href='#method.get_value' class='fnname'>get_value</a>(&amp;self) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#346-357' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the value of the Pin (0 or 1)</p>
+
+<p>If successful, 1 will be returned if the pin is high
+and 0 will be returned if the pin is low (this may or may
+not match the signal level of the actual signal depending
+on the GPIO &quot;active_low&quot; entry).</p>
+</div><h4 id='method.set_value' class="method"><span id='set_value.v' class='invisible'><code>pub fn <a href='#method.set_value' class='fnname'>set_value</a>(&amp;self, value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#364-371' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Set the value of the Pin</p>
+
+<p>This will set the value of the pin either high or low.
+A 0 value will set the pin low and any other value will
+set the pin high (1 is typical).</p>
+</div><h4 id='method.get_edge' class="method"><span id='get_edge.v' class='invisible'><code>pub fn <a href='#method.get_edge' class='fnname'>get_edge</a>(&amp;self) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="enum" href="../sysfs_gpio/enum.Edge.html" title="enum sysfs_gpio::Edge">Edge</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#377-390' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the currently configured edge for this pin</p>
+
+<p>This value will only be present if the Pin allows
+for interrupts.</p>
+</div><h4 id='method.set_edge' class="method"><span id='set_edge.v' class='invisible'><code>pub fn <a href='#method.set_edge' class='fnname'>set_edge</a>(&amp;self, edge: <a class="enum" href="../sysfs_gpio/enum.Edge.html" title="enum sysfs_gpio::Edge">Edge</a>) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#397-406' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Set the edge on which this GPIO will trigger when polled</p>
+
+<p>The configured edge determines what changes to the Pin will
+result in <code>poll()</code> returning.  This call will return an Error
+if the pin does not allow interrupts.</p>
+</div><h4 id='method.get_active_low' class="method"><span id='get_active_low.v' class='invisible'><code>pub fn <a href='#method.get_active_low' class='fnname'>get_active_low</a>(&amp;self) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#409-420' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get polarity of the Pin (<code>true</code> is active low)</p>
+</div><h4 id='method.set_active_low' class="method"><span id='set_active_low.v' class='invisible'><code>pub fn <a href='#method.set_active_low' class='fnname'>set_active_low</a>(&amp;self, active_low: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#426-434' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Set the polarity of the Pin (<code>true</code> is active low)</p>
+
+<p>This will affect &quot;rising&quot; and &quot;falling&quot; edge triggered
+configuration.</p>
+</div><h4 id='method.get_poller' class="method"><span id='get_poller.v' class='invisible'><code>pub fn <a href='#method.get_poller' class='fnname'>get_poller</a>(&amp;self) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="struct" href="../sysfs_gpio/struct.PinPoller.html" title="struct sysfs_gpio::PinPoller">PinPoller</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#441-443' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get a PinPoller object for this pin</p>
+
+<p>This pin poller object will register an interrupt with the
+kernel and allow you to poll() on it and receive notifications
+that an interrupt has occured with minimal delay.</p>
+</div><h4 id='method.get_async_poller' class="method"><span id='get_async_poller.v' class='invisible'><code>pub fn <a href='#method.get_async_poller' class='fnname'>get_async_poller</a>(&amp;self) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="struct" href="../sysfs_gpio/struct.AsyncPinPoller.html" title="struct sysfs_gpio::AsyncPinPoller">AsyncPinPoller</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#452-454' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get an AsyncPinPoller object for this pin</p>
+
+<p>The async pin poller object can be used with the <code>mio</code> crate. You should probably call
+<code>set_edge()</code> before using this.</p>
+
+<p>This method is only available when the <code>mio-evented</code> crate feature is enabled.</p>
+</div><h4 id='method.get_stream' class="method"><span id='get_stream.v' class='invisible'><code>pub fn <a href='#method.get_stream' class='fnname'>get_stream</a>(&amp;self, handle: &amp;<a class="struct" href="../tokio_core/reactor/struct.Handle.html" title="struct tokio_core::reactor::Handle">Handle</a>) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="struct" href="../sysfs_gpio/struct.PinStream.html" title="struct sysfs_gpio::PinStream">PinStream</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#463-465' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get a Stream of pin interrupts for this pin</p>
+
+<p>The PinStream object can be used with the <code>tokio-core</code> crate. You should probably call
+<code>set_edge()</code> before using this.</p>
+
+<p>This method is only available when the <code>tokio</code> crate feature is enabled.</p>
+</div><h4 id='method.get_value_stream' class="method"><span id='get_value_stream.v' class='invisible'><code>pub fn <a href='#method.get_value_stream' class='fnname'>get_value_stream</a>(&amp;self, handle: &amp;<a class="struct" href="../tokio_core/reactor/struct.Handle.html" title="struct tokio_core::reactor::Handle">Handle</a>) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="struct" href="../sysfs_gpio/struct.PinValueStream.html" title="struct sysfs_gpio::PinValueStream">PinValueStream</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#479-481' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get a Stream of pin values for this pin</p>
+
+<p>The PinStream object can be used with the <code>tokio-core</code> crate. You should probably call
+<code>set_edge(Edge::BothEdges)</code> before using this.</p>
+
+<p>Note that the values produced are the value of the pin as soon as we get to handling the
+interrupt in userspace.  Each time this stream produces a value, a change has occurred, but
+it could end up producing the same value multiple times if the value has changed back
+between when the interrupt occurred and when the value was read.</p>
+
+<p>This method is only available when the <code>tokio</code> crate feature is enabled.</p>
+</div></div>
+            <h2 id='implementations' class='small-section-header'>
+              Trait Implementations<a href='#implementations' class='anchor'></a>
+            </h2>
+        <h3 id='impl-Clone' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code><a href='#impl-Clone' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>Self)</code></span><span class='out-of-band'><div class='ghost'></div><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/clone.rs.html#112-114' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 id='impl-Copy' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a> for <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code><a href='#impl-Copy' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div><h3 id='impl-Debug' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code><a href='#impl-Debug' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></p>
+</div></div><h3 id='impl-PartialEq' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq">PartialEq</a> for <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code><a href='#impl-PartialEq' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.eq' class="method"><span id='eq.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>This method tests for <code>self</code> and <code>other</code> values to be equal, and is used by <code>==</code>. <a href="https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq">Read more</a></p>
+</div><h4 id='method.ne' class="method"><span id='ne.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#method.ne' class='fnname'>ne</a>(&amp;self, __arg_0: &amp;<a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>This method tests for <code>!=</code>.</p>
+</div></div><h3 id='impl-Eq' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html" title="trait core::cmp::Eq">Eq</a> for <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code><a href='#impl-Eq' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#82' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>↑</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>↓</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>↹</dt>
+                    <dd>Switch tab</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt style="width:31px;">+ / -</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "sysfs_gpio";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `PinPoller` struct in crate `sysfs_gpio`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, PinPoller">
+
+    <title>sysfs_gpio::PinPoller - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        <div class="sidebar-menu">&#9776;</div>
+        
+        <p class='location'>Struct PinPoller</p><div class="sidebar-elems"><div class="block items"><a class="sidebar-title" href="#methods">Methods</a><div class="sidebar-links"><a href="#method.get_pin">get_pin</a><a href="#method.new">new</a><a href="#method.poll">poll</a></div><a class="sidebar-title" href="#implementations">Trait Implementations</a><div class="sidebar-links"><a href="#impl-Debug">Debug</a><a href="#impl-Drop">Drop</a></div></div><p class='location'><a href='index.html'>sysfs_gpio</a></p><script>window.sidebarCurrent = {name: 'PinPoller', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script></div>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>sysfs_gpio</a>::<wbr><a class="struct" href=''>PinPoller</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#497-501' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct PinPoller { /* fields omitted */ }</pre>
+                    <h2 id='methods' class='small-section-header'>
+                      Methods<a href='#methods' class='anchor'></a>
+                    </h2>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../sysfs_gpio/struct.PinPoller.html" title="struct sysfs_gpio::PinPoller">PinPoller</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#503-573' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.get_pin' class="method"><span id='get_pin.v' class='invisible'><code>pub fn <a href='#method.get_pin' class='fnname'>get_pin</a>(&amp;self) -&gt; <a class="struct" href="../sysfs_gpio/struct.Pin.html" title="struct sysfs_gpio::Pin">Pin</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#508-510' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Get the pin associated with this PinPoller</p>
+
+<p>Note that this will be a new Pin object with the
+proper pin number.</p>
+</div><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(pin_num: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="struct" href="../sysfs_gpio/struct.PinPoller.html" title="struct sysfs_gpio::PinPoller">PinPoller</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#514-533' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Create a new PinPoller for the provided pin number</p>
+</div><h4 id='method.poll' class="method"><span id='poll.v' class='invisible'><code>pub fn <a href='#method.poll' class='fnname'>poll</a>(&amp;mut self, timeout_ms: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.isize.html">isize</a>) -&gt; <a class="type" href="../sysfs_gpio/type.Result.html" title="type sysfs_gpio::Result">Result</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>&gt;&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#558-567' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Block until an interrupt occurs</p>
+
+<p>This call will block until an interrupt occurs.  The types
+of interrupts which may result in this call returning
+may be configured by calling <code>set_edge()</code> prior to
+making this call.  This call makes use of epoll under the
+covers.  To poll on multiple GPIOs or other event sources,
+poll asynchronously using the integration with either <code>mio</code>
+or <code>tokio_core</code>.</p>
+
+<p>This function will return Some(value) of the pin if a change is
+detected or None if a timeout occurs.  Note that the value provided
+is the value of the pin as soon as we get to handling the interrupt
+in userspace.  Each time this function returns with a value, a change
+has occurred, but you could end up reading the same value multiple
+times as the value has changed back between when the interrupt
+occurred and the current time.</p>
+</div></div>
+            <h2 id='implementations' class='small-section-header'>
+              Trait Implementations<a href='#implementations' class='anchor'></a>
+            </h2>
+        <h3 id='impl-Debug' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../sysfs_gpio/struct.PinPoller.html" title="struct sysfs_gpio::PinPoller">PinPoller</a></code><a href='#impl-Debug' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#496' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#496' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter. <a href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt">Read more</a></p>
+</div></div><h3 id='impl-Drop' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html" title="trait core::ops::drop::Drop">Drop</a> for <a class="struct" href="../sysfs_gpio/struct.PinPoller.html" title="struct sysfs_gpio::PinPoller">PinPoller</a></code><a href='#impl-Drop' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#575-582' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class="method"><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/sysfs_gpio/lib.rs.html#576-581' title='goto source code'>[src]</a></span></h4>
+<div class='docblock'><p>Executes the destructor for this type. <a href="https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>↑</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>↓</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>↹</dt>
+                    <dd>Switch tab</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt style="width:31px;">+ / -</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "sysfs_gpio";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
