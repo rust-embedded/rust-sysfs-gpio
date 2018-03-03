@@ -7,6 +7,8 @@
 ### Changed
 
 - Add support for `active_low` configuration.
+- Remove dependency on regexp
+- Update nix to 0.10.0
 
 ## [0.5.1] - 2016-06-17
 

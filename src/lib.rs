@@ -49,7 +49,6 @@ extern crate futures;
 #[cfg(feature = "mio-evented")]
 extern crate mio;
 extern crate nix;
-extern crate regex;
 #[cfg(feature = "tokio")]
 extern crate tokio_core;
 
@@ -77,6 +76,8 @@ use tokio_core::reactor::{Handle, PollEvented};
 
 mod error;
 pub use error::Error;
+
+const GPIO_PATH_PREFIX: &'static str = "/sys/class/gpio/gpio";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Pin {
@@ -176,24 +177,21 @@ impl Pin {
                                           a directory"
                                                  .to_owned()));
         }
-
-        let re = regex::Regex::new(r"^/sys/.*?/gpio/gpio(\d+)$").unwrap();
-        let caps = match re.captures(pb.to_str().unwrap_or("")) {
-            Some(cap) => cap,
-            None => return Err(Error::InvalidPath(format!("{:?}", pb))),
-        };
-
-        let num: u64 = match caps.at(1) {
-            Some(num) => {
-                match num.parse() {
-                    Ok(unum) => unum,
-                    Err(_) => return Err(Error::InvalidPath(format!("{:?}", pb))),
-                }
-            }
-            None => return Err(Error::InvalidPath(format!("{:?}", pb))),
-        };
-
+        let num = Pin::extract_pin_from_path(&pb.to_str().unwrap_or(""))?;
         Ok(Pin::new(num))
+    }
+
+    /// Extract pin number from paths like /sys/class/gpio/gpioXXX
+    fn extract_pin_from_path(path: &str) -> Result<u64> {
+        if path.starts_with(GPIO_PATH_PREFIX) {
+            path.split_at(GPIO_PATH_PREFIX.len()).1.parse::<u64>().or(
+                Err(
+                    Error::InvalidPath(format!("{:?}", path)),
+                ),
+            )
+        } else {
+            Err(Error::InvalidPath(format!("{:?}", path)))
+        }
     }
 
     /// Get the pin number
@@ -483,6 +481,18 @@ impl Pin {
     }
 }
 
+#[test]
+fn extract_pin_fom_path_test() {
+    let tok = Pin::extract_pin_from_path(&"/sys/class/gpio/gpio951");
+    assert_eq!(951, tok.unwrap());
+    let err1 = Pin::extract_pin_from_path(&"/sys/is/error/gpio/gpio111");
+    assert_eq!(true, err1.is_err());
+    let err2 = Pin::extract_pin_from_path(&"/sys/CLASS/gpio/gpio");
+    assert_eq!(true, err2.is_err());
+    let err3 = Pin::extract_pin_from_path(&"/sys/class/gpio/gpioSDS");
+    assert_eq!(true, err3.is_err());
+}
+
 #[derive(Debug)]
 pub struct PinPoller {
     pin_num: u64,
@@ -505,13 +515,9 @@ impl PinPoller {
         let devfile: File = File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num))?;
         let devfile_fd = devfile.as_raw_fd();
         let epoll_fd = epoll_create()?;
-        let events = EPOLLPRI | EPOLLET;
-        let info = EpollEvent {
-            events: events,
-            data: 0u64,
-        };
+        let mut event = EpollEvent::new(EpollFlags::EPOLLPRI | EpollFlags::EPOLLET, 0u64);
 
-        match epoll_ctl(epoll_fd, EpollOp::EpollCtlAdd, devfile_fd, &info) {
+        match epoll_ctl(epoll_fd, EpollOp::EpollCtlAdd, devfile_fd, &mut event) {
             Ok(_) => {
                 Ok(PinPoller {
                        pin_num: pin_num,
@@ -551,10 +557,7 @@ impl PinPoller {
     #[cfg(any(target_os = "linux", target_os = "android"))]
     pub fn poll(&mut self, timeout_ms: isize) -> Result<Option<u8>> {
         flush_input_from_file(&mut self.devfile, 255)?;
-        let dummy_event = EpollEvent {
-            events: EPOLLPRI | EPOLLET,
-            data: 0u64,
-        };
+        let dummy_event = EpollEvent::new(EpollFlags::EPOLLPRI | EpollFlags::EPOLLET, 0u64);
         let mut events: [EpollEvent; 1] = [dummy_event];
         let cnt = epoll_wait(self.epoll_fd, &mut events, timeout_ms)?;
         Ok(match cnt {
