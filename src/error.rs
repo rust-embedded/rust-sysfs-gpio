@@ -1,6 +1,7 @@
 use std::convert;
 use std::fmt;
 use std::io;
+use nix;
 
 #[derive(Debug)]
 pub enum Error {
@@ -50,8 +51,11 @@ impl convert::From<io::Error> for Error {
     }
 }
 
-impl convert::From<::nix::Error> for Error {
-    fn from(e: ::nix::Error) -> Error {
-        Error::Io(io::Error::from_raw_os_error(e.errno() as i32))
+impl convert::From<nix::Error> for Error {
+    fn from(e: nix::Error) -> Error {
+        match e {
+            nix::Error::Sys(errno) => Error::Io(errno.into()),
+            other => Error::Unexpected(format!("{:?}", other)), // should just be dealing with errno case
+        }
     }
 }
