@@ -38,8 +38,4 @@ script:
     travis-cargo --only stable doc -- --features=tokio
 
 after_success:
-  - '[ $TRAVIS_OS_NAME == linux ] && travis-cargo --only stable doc-upload'
   - '[ $TRAVIS_OS_NAME == linux ] && travis-cargo coveralls --no-sudo --verify'
-
-notifications:
-  webhooks: http://rust-embedded-bot.herokuapp.com/travis
