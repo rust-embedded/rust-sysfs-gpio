@@ -77,8 +77,6 @@ use tokio_core::reactor::{Handle, PollEvented};
 mod error;
 pub use error::Error;
 
-const GPIO_PATH_PREFIX: &'static str = "/sys/class/gpio/gpio";
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Pin {
     pin_num: u64,
@@ -177,21 +175,17 @@ impl Pin {
                                           a directory"
                                                  .to_owned()));
         }
-        let num = Pin::extract_pin_from_path(&pb.to_str().unwrap_or(""))?;
+        let num = Pin::extract_pin_from_path(&pb)?;
         Ok(Pin::new(num))
     }
 
     /// Extract pin number from paths like /sys/class/gpio/gpioXXX
-    fn extract_pin_from_path(path: &str) -> Result<u64> {
-        if path.starts_with(GPIO_PATH_PREFIX) {
-            path.split_at(GPIO_PATH_PREFIX.len()).1.parse::<u64>().or(
-                Err(
-                    Error::InvalidPath(format!("{:?}", path)),
-                ),
-            )
-        } else {
-            Err(Error::InvalidPath(format!("{:?}", path)))
-        }
+    fn extract_pin_from_path<P: AsRef<Path>>(path: P) -> Result<u64> {
+        path.as_ref()
+            .file_name()
+            .and_then(|filename| filename.to_str())
+            .and_then(|filename_str| filename_str.trim_left_matches("gpio").parse::<u64>().ok())
+            .ok_or(Error::InvalidPath(format!("{:?}", path.as_ref())))
     }
 
     /// Get the pin number
@@ -483,14 +477,16 @@ impl Pin {
 
 #[test]
 fn extract_pin_fom_path_test() {
-    let tok = Pin::extract_pin_from_path(&"/sys/class/gpio/gpio951");
-    assert_eq!(951, tok.unwrap());
-    let err1 = Pin::extract_pin_from_path(&"/sys/is/error/gpio/gpio111");
+    let tok1 = Pin::extract_pin_from_path(&"/sys/class/gpio/gpio951");
+    assert_eq!(951, tok1.unwrap());
+    let tok2 = Pin::extract_pin_from_path(&"/sys/CLASS/gpio/gpio951/");
+    assert_eq!(951, tok2.unwrap());
+    let tok3 = Pin::extract_pin_from_path(&"../../devices/soc0/gpiochip3/gpio/gpio124");
+    assert_eq!(124, tok3.unwrap());
+    let err1 = Pin::extract_pin_from_path(&"/sys/CLASS/gpio/gpio");
     assert_eq!(true, err1.is_err());
-    let err2 = Pin::extract_pin_from_path(&"/sys/CLASS/gpio/gpio");
+    let err2 = Pin::extract_pin_from_path(&"/sys/class/gpio/gpioSDS");
     assert_eq!(true, err2.is_err());
-    let err3 = Pin::extract_pin_from_path(&"/sys/class/gpio/gpioSDS");
-    assert_eq!(true, err3.is_err());
 }
 
 #[derive(Debug)]

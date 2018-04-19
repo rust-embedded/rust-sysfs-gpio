@@ -2,6 +2,12 @@
 
 ## [master] - Unreleased
 
+### Fixed
+
+- Relaxed path restrictions on `Pin::from_path` to allow for directories
+  outside of `/sys/class/gpio`, required for some SOCs that symlink outside of
+  that directory.
+
 ## [0.5.2] - 2018-03-02
 
 ### Changed
