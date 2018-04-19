@@ -2,6 +2,8 @@
 
 ## [master] - Unreleased
 
+## [0.5.3] - 2018-04-19
+
 ### Fixed
 
 - Relaxed path restrictions on `Pin::from_path` to allow for directories
@@ -164,7 +166,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[master]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.2...master
+[master]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.3...master
+[0.5.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.4...0.5.0
