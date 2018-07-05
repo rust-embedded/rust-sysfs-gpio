@@ -6,14 +6,8 @@ license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-embedded/rust-sysfs-gpio"
 homepage = "https://github.com/rust-embedded/rust-sysfs-gpio"
 documentation = "http://rust-embedded.github.io/rust-sysfs-gpio/"
-description = """
-Provides access to the Linux sysfs interface to GPIOs.
-Via the `sysfs_gpio` crate you can export, unexport,
-set the direction, read, write, and poll (using
-interrupts) GPIOs from userspace.
-
-See https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
-"""
+description = "Provides access to GPIOs using the Linux sysfs interface."
+readme = "README.md"
 
 [features]
 mio-evented = ["mio"]
