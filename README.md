@@ -1,5 +1,5 @@
-rust-sysfs-gpio
-===============
+sysfs_gpio
+==========
 
 [![Build Status](https://travis-ci.org/rust-embedded/rust-sysfs-gpio.svg?branch=master)](https://travis-ci.org/rust-embedded/rust-sysfs-gpio)
 [![Version](https://img.shields.io/crates/v/sysfs-gpio.svg)](https://crates.io/crates/sysfs-gpio)
@@ -7,9 +7,10 @@ rust-sysfs-gpio
 
 - [API Documentation](https://docs.rs/sysfs_gpio)
 
-rust-sysfs-gpio is a rust library/crate providing access to the Linux
-sysfs GPIO interface (https://www.kernel.org/doc/Documentation).  It
-seeks to provide an API that is safe, convenient, and efficient.
+The `sysfs_gpio` crate provides access to the Linux sysfs GPIO interface
+(https://www.kernel.org/doc/Documentation/gpio/sysfs.txt). It seeks to provide
+an API that is safe, convenient, and efficient and supports exporting,
+unexporting, reading, writing and waiting for interrupts on pins.
 
 Many devices such as the Raspberry Pi or Beaglebone Black provide
 userspace access to a number of GPIO peripherals.  The standard kernel
