@@ -9,9 +9,6 @@
 // Portions of this implementation are based on work by Nat Pryce:
 // https://github.com/npryce/rusty-pi/blob/master/src/pi/gpio.rs
 
-#![crate_type = "lib"]
-#![crate_name = "sysfs_gpio"]
-
 //! GPIO access under Linux using the GPIO sysfs interface
 //!
 //! The methods exposed by this library are centered around
