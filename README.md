@@ -21,8 +21,7 @@ You might want to also check out the
 convenient way to associate names with pins and export them as part of system
 boot.  That project uses this library.
 
-Install/Use
------------
+## Install/Use
 
 To use `sysfs_gpio`, first add this to your `Cargo.toml`:
 
@@ -37,8 +36,7 @@ Then, add this to your crate root:
 extern crate sysfs_gpio;
 ```
 
-Example/API
------------
+## Example/API
 
 Blinking an LED:
 
@@ -70,8 +68,7 @@ More Examples:
 - [Poll several pins asynchronously with Tokio](examples/tokio.rs)
 - [gpio-utils Project (uses most features)](https://github.com/rust-embedded/gpio-utils)
 
-Features
---------
+## Features
 
 The following features are planned for the library:
 
@@ -86,16 +83,14 @@ The following features are planned for the library:
 - [x] Support for asynchronous polling using `mio` or `tokio-core` (requires
       enabling the `mio-evented` or `tokio` crate features, respectively)
 
-Cross Compiling
----------------
+## Cross Compiling
 
 Most likely, the machine you are running on is not your development
 machine (although it could be).  In those cases, you will need to
 cross-compile.  The [rust-cross guide](https://github.com/japaric/rust-cross)
 provides excellent, detailed instructions for cross-compiling.
 
-Running the Example
--------------------
+## Running the Example
 
 Cross-compiling can be done by specifying an appropriate target.  You
 can then move that to your device by whatever means and run it.
@@ -105,15 +100,27 @@ $ cargo build --target=arm-unknown-linux-gnueabihf --example blinky
 $ scp target/arm-unknown-linux-gnueabihf/debug/examples/blinky ...
 ```
 
-License
--------
+## License
 
-```
-Copyright (c) 2015, Paul Osborne <ospbau@gmail.com>
+Licensed under either of
 
-Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
-http://www.apache.org/license/LICENSE-2.0> or the MIT license
-<LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
-option.  This file may not be copied, modified, or distributed
-except according to those terms.
-```
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
+  http://www.apache.org/licenses/LICENSE-2.0)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.
+
+## Code of Conduct
+
+Contribution to this crate is organized under the terms of the [Rust Code of
+Conduct][CoC], the maintainer of this crate, the [Embedded Linux Team][team], promises
+to intervene to uphold that code of conduct.
+
+[CoC]: CODE_OF_CONDUCT.md
+[team]: https://github.com/rust-embedded/wg#the-embedded-linux-team
