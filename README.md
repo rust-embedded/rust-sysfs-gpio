@@ -83,8 +83,8 @@ The following features are planned for the library:
 - [ ] Support for configuring whether a pin is active low/high
 - [x] Support for configuring interrupts on GPIO
 - [x] Support for polling on GPIO with configured interrupt
-- [x] Support for asynchronous polling using `mio` or `tokio-core` (requires
-      enabling the `mio-evented` or `tokio` crate features, respectively)
+- [x] Support for asynchronous polling using `mio` or `tokio` (requires
+      enabling the `mio-evented` or `use_tokio` crate features, respectively)
 
 Cross Compiling
 ---------------
