@@ -2,6 +2,10 @@
 
 ## [master] - Unreleased
 
+### Changed
+
+- Migrated to 'tokio' crate. 
+
 ## [0.5.3] - 2018-04-19
 
 ### Fixed

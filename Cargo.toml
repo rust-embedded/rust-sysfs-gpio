@@ -11,10 +11,10 @@ readme = "README.md"
 
 [features]
 mio-evented = ["mio"]
-tokio = ["futures", "tokio-core", "mio-evented"]
+use_tokio = ["futures", "tokio", "mio-evented"]
 
 [dependencies]
 futures = { version = "0.1", optional = true }
 nix = "0.10.0"
 mio = { version = "0.6", optional = true }
-tokio-core = { version = "0.1", optional = true }
+tokio = { version = "0.1", optional = true }
