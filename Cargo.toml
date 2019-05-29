@@ -1,6 +1,6 @@
 [package]
 name = "sysfs_gpio"
-version = "0.5.3"
+version = "0.5.4"
 authors = ["Paul Osborne <osbpau@gmail.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-embedded/rust-sysfs-gpio"
