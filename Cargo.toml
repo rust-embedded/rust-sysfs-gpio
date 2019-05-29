@@ -1,6 +1,6 @@
 [package]
 name = "sysfs_gpio"
-version = "0.5.3"
+version = "0.5.4"
 authors = ["Paul Osborne <osbpau@gmail.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-embedded/rust-sysfs-gpio"
@@ -15,6 +15,6 @@ use_tokio = ["futures", "tokio", "mio-evented"]
 
 [dependencies]
 futures = { version = "0.1", optional = true }
-nix = "0.10.0"
+nix = "0.14.0"
 mio = { version = "0.6", optional = true }
 tokio = { version = "0.1", optional = true }
