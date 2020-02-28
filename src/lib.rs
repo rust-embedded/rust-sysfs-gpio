@@ -189,7 +189,7 @@ impl Pin {
         path.as_ref()
             .file_name()
             .and_then(|filename| filename.to_str())
-            .and_then(|filename_str| filename_str.trim_left_matches("gpio").parse::<u64>().ok())
+            .and_then(|filename_str| filename_str.trim_start_matches("gpio").parse::<u64>().ok())
             .ok_or(Error::InvalidPath(format!("{:?}", path.as_ref())))
     }
 
@@ -223,7 +223,7 @@ impl Pin {
         self.export()?;
         match closure() {
             Ok(()) => {
-                try!(self.unexport());
+                self.unexport()?;
                 Ok(())
             }
             Err(err) => {
@@ -571,7 +571,7 @@ impl PinPoller {
     }
 
     #[cfg(not(any(target_os = "linux", target_os = "android")))]
-    pub fn new(pin_num: u64) -> Result<PinPoller> {
+    pub fn new(_pin_num: u64) -> Result<PinPoller> {
         Err(Error::Unsupported("PinPoller".into()))
     }
 
@@ -605,7 +605,7 @@ impl PinPoller {
     }
 
     #[cfg(not(any(target_os = "linux", target_os = "android")))]
-    pub fn poll(&mut self, timeout_ms: isize) -> Result<Option<u8>> {
+    pub fn poll(&mut self, _timeout_ms: isize) -> Result<Option<u8>> {
         Err(Error::Unsupported("PinPoller".into()))
     }
 }
