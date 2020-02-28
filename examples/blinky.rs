@@ -8,10 +8,10 @@
 
 extern crate sysfs_gpio;
 
-use sysfs_gpio::{Direction, Pin};
-use std::time::Duration;
-use std::thread::sleep;
 use std::env;
+use std::thread::sleep;
+use std::time::Duration;
+use sysfs_gpio::{Direction, Pin};
 
 struct Arguments {
     pin: u64,
@@ -58,20 +58,18 @@ fn get_args() -> Option<Arguments> {
         Err(_) => return None,
     };
     Some(Arguments {
-             pin: pin,
-             duration_ms: duration_ms,
-             period_ms: period_ms,
-         })
+        pin: pin,
+        duration_ms: duration_ms,
+        period_ms: period_ms,
+    })
 }
 
 fn main() {
     match get_args() {
         None => print_usage(),
-        Some(args) => {
-            match blink_my_led(args.pin, args.duration_ms, args.period_ms) {
-                Ok(()) => println!("Success!"),
-                Err(err) => println!("We have a blinking problem: {}", err),
-            }
-        }
+        Some(args) => match blink_my_led(args.pin, args.duration_ms, args.period_ms) {
+            Ok(()) => println!("Success!"),
+            Err(err) => println!("We have a blinking problem: {}", err),
+        },
     }
 }

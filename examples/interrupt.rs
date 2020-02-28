@@ -8,10 +8,10 @@
 
 extern crate sysfs_gpio;
 
-use sysfs_gpio::{Direction, Edge, Pin};
 use std::env;
 use std::io::prelude::*;
 use std::io::stdout;
+use sysfs_gpio::{Direction, Edge, Pin};
 
 fn interrupt(pin: u64) -> sysfs_gpio::Result<()> {
     let input = Pin::new(pin);
@@ -38,12 +38,10 @@ fn main() {
         println!("Usage: ./interrupt <pin>");
     } else {
         match args[1].parse::<u64>() {
-            Ok(pin) => {
-                match interrupt(pin) {
-                    Ok(()) => println!("Interrupting Complete!"),
-                    Err(err) => println!("Error: {}", err),
-                }
-            }
+            Ok(pin) => match interrupt(pin) {
+                Ok(()) => println!("Interrupting Complete!"),
+                Err(err) => println!("Error: {}", err),
+            },
             Err(_) => println!("Usage: ./interrupt <pin>"),
         }
     }

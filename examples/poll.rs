@@ -8,10 +8,10 @@
 
 extern crate sysfs_gpio;
 
-use sysfs_gpio::{Direction, Pin};
 use std::env;
 use std::thread::sleep;
 use std::time::Duration;
+use sysfs_gpio::{Direction, Pin};
 
 fn poll(pin_num: u64) -> sysfs_gpio::Result<()> {
     // NOTE: this currently runs forever and as such if
@@ -40,12 +40,10 @@ fn main() {
         println!("Usage: ./poll <pin>");
     } else {
         match args[1].parse::<u64>() {
-            Ok(pin) => {
-                match poll(pin) {
-                    Ok(()) => println!("Polling Complete!"),
-                    Err(err) => println!("Error: {}", err),
-                }
-            }
+            Ok(pin) => match poll(pin) {
+                Ok(()) => println!("Polling Complete!"),
+                Err(err) => println!("Error: {}", err),
+            },
             Err(_) => println!("Usage: ./poll <pin>"),
         }
     }

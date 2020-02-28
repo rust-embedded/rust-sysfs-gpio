@@ -1,7 +1,7 @@
+use nix;
 use std::convert;
 use std::fmt;
 use std::io;
-use nix;
 
 #[derive(Debug)]
 pub enum Error {
@@ -43,7 +43,6 @@ impl fmt::Display for Error {
         }
     }
 }
-
 
 impl convert::From<io::Error> for Error {
     fn from(e: io::Error) -> Error {
