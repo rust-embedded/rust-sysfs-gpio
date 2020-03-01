@@ -84,6 +84,11 @@ The following features are planned for the library:
 - [x] Support for asynchronous polling using `mio` or `tokio` (requires
       enabling the `mio-evented` or `use_tokio` crate features, respectively)
 
+## Minimum Supported Rust Version (MSRV)
+
+This crate is guaranteed to compile on stable Rust 1.31 and up.  It *might*
+compile with older versions but that may change in any new patch release.
+
 ## Cross Compiling
 
 Most likely, the machine you are running on is not your development
