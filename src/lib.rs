@@ -51,8 +51,10 @@ extern crate tokio;
 
 use std::fs;
 use std::fs::File;
+use std::io;
 use std::io::prelude::*;
-use std::io::{self, SeekFrom};
+#[cfg(any(target_os = "linux", target_os = "android"))]
+use std::io::SeekFrom;
 use std::os::unix::prelude::*;
 use std::path::Path;
 
@@ -113,12 +115,14 @@ pub type Result<T> = ::std::result::Result<T, error::Error>;
 /// Typically, one would just use seek() for this sort of thing,
 /// but for certain files (e.g. in sysfs), you need to actually
 /// read it.
+#[cfg(any(target_os = "linux", target_os = "android"))]
 fn flush_input_from_file(dev_file: &mut File, max: usize) -> io::Result<usize> {
     let mut s = String::with_capacity(max);
     dev_file.read_to_string(&mut s)
 }
 
 /// Get the pin value from the provided file
+#[cfg(any(target_os = "linux", target_os = "android"))]
 fn get_value_from_file(dev_file: &mut File) -> Result<u8> {
     let mut s = String::with_capacity(10);
     dev_file.seek(SeekFrom::Start(0))?;
