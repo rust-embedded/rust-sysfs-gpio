@@ -52,17 +52,19 @@ extern crate tokio;
 
 use std::fs;
 use std::fs::File;
-use std::io::{self, SeekFrom};
+use std::io;
 use std::io::prelude::*;
+#[cfg(any(target_os = "linux", target_os = "android"))]
+use std::io::SeekFrom;
 use std::os::unix::prelude::*;
 use std::path::Path;
 
 #[cfg(feature = "use_tokio")]
 use futures::{Async, Poll, Stream};
 #[cfg(feature = "mio-evented")]
-use mio::Evented;
-#[cfg(feature = "mio-evented")]
 use mio::unix::EventedFd;
+#[cfg(feature = "mio-evented")]
+use mio::Evented;
 #[cfg(any(target_os = "linux", target_os = "android"))]
 use nix::sys::epoll::*;
 use nix::unistd::close;
@@ -96,10 +98,15 @@ pub enum Edge {
 
 #[macro_export]
 macro_rules! try_unexport {
-    ($gpio:ident, $e:expr) => (match $e {
-        Ok(res) => res,
-        Err(e) => { try!($gpio.unexport()); return Err(e) },
-    });
+    ($gpio:ident, $e:expr) => {
+        match $e {
+            Ok(res) => res,
+            Err(e) => {
+                try!($gpio.unexport());
+                return Err(e);
+            }
+        }
+    };
 }
 
 pub type Result<T> = ::std::result::Result<T, error::Error>;
@@ -109,19 +116,24 @@ pub type Result<T> = ::std::result::Result<T, error::Error>;
 /// Typically, one would just use seek() for this sort of thing,
 /// but for certain files (e.g. in sysfs), you need to actually
 /// read it.
+#[cfg(any(target_os = "linux", target_os = "android"))]
 fn flush_input_from_file(dev_file: &mut File, max: usize) -> io::Result<usize> {
     let mut s = String::with_capacity(max);
     dev_file.read_to_string(&mut s)
 }
 
 /// Get the pin value from the provided file
+#[cfg(any(target_os = "linux", target_os = "android"))]
 fn get_value_from_file(dev_file: &mut File) -> Result<u8> {
     let mut s = String::with_capacity(10);
     dev_file.seek(SeekFrom::Start(0))?;
     dev_file.read_to_string(&mut s)?;
     match s[..1].parse::<u8>() {
         Ok(n) => Ok(n),
-        Err(_) => Err(Error::Unexpected(format!("Unexpected value file contents: {:?}", s))),
+        Err(_) => Err(Error::Unexpected(format!(
+            "Unexpected value file contents: {:?}",
+            s
+        ))),
     }
 }
 
@@ -167,9 +179,11 @@ impl Pin {
 
         // determine if this is valid and figure out the pin_num
         if !fs::metadata(&pb)?.is_dir() {
-            return Err(Error::Unexpected("Provided path not a directory or symlink to \
+            return Err(Error::Unexpected(
+                "Provided path not a directory or symlink to \
                                           a directory"
-                                                 .to_owned()));
+                    .to_owned(),
+            ));
         }
         let num = Pin::extract_pin_from_path(&pb)?;
         Ok(Pin::new(num))
@@ -180,7 +194,7 @@ impl Pin {
         path.as_ref()
             .file_name()
             .and_then(|filename| filename.to_str())
-            .and_then(|filename_str| filename_str.trim_left_matches("gpio").parse::<u64>().ok())
+            .and_then(|filename_str| filename_str.trim_start_matches("gpio").parse::<u64>().ok())
             .ok_or(Error::InvalidPath(format!("{:?}", path.as_ref())))
     }
 
@@ -211,11 +225,10 @@ impl Pin {
     /// ```
     #[inline]
     pub fn with_exported<F: FnOnce() -> Result<()>>(&self, closure: F) -> Result<()> {
-
         self.export()?;
         match closure() {
             Ok(()) => {
-                try!(self.unexport());
+                self.unexport()?;
                 Ok(())
             }
             Err(err) => {
@@ -261,8 +274,7 @@ impl Pin {
     pub fn export(&self) -> Result<()> {
         if fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)).is_err() {
             let mut export_file = File::create("/sys/class/gpio/export")?;
-            export_file
-                .write_all(format!("{}", self.pin_num).as_bytes())?;
+            export_file.write_all(format!("{}", self.pin_num).as_bytes())?;
         }
         Ok(())
     }
@@ -276,8 +288,7 @@ impl Pin {
     pub fn unexport(&self) -> Result<()> {
         if fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)).is_ok() {
             let mut unexport_file = File::create("/sys/class/gpio/unexport")?;
-            unexport_file
-                .write_all(format!("{}", self.pin_num).as_bytes())?;
+            unexport_file.write_all(format!("{}", self.pin_num).as_bytes())?;
         }
         Ok(())
     }
@@ -290,15 +301,16 @@ impl Pin {
     /// Get the direction of the Pin
     pub fn get_direction(&self) -> Result<Direction> {
         match self.read_from_device_file("direction") {
-            Ok(s) => {
-                match s.trim() {
-                    "in" => Ok(Direction::In),
-                    "out" => Ok(Direction::Out),
-                    "high" => Ok(Direction::High),
-                    "low" => Ok(Direction::Low),
-                    other => Err(Error::Unexpected(format!("direction file contents {}", other))),
-                }
-            }
+            Ok(s) => match s.trim() {
+                "in" => Ok(Direction::In),
+                "out" => Ok(Direction::Out),
+                "high" => Ok(Direction::High),
+                "low" => Ok(Direction::Low),
+                other => Err(Error::Unexpected(format!(
+                    "direction file contents {}",
+                    other
+                ))),
+            },
             Err(e) => Err(::std::convert::From::from(e)),
         }
     }
@@ -317,12 +329,15 @@ impl Pin {
     /// not support changing the direction of a pin in userspace.  If
     /// this is the case, you will get an error.
     pub fn set_direction(&self, dir: Direction) -> Result<()> {
-        self.write_to_device_file("direction", match dir {
+        self.write_to_device_file(
+            "direction",
+            match dir {
                 Direction::In => "in",
                 Direction::Out => "out",
                 Direction::High => "high",
                 Direction::Low => "low",
-            })?;
+            },
+        )?;
 
         Ok(())
     }
@@ -335,13 +350,11 @@ impl Pin {
     /// on the GPIO "active_low" entry).
     pub fn get_value(&self) -> Result<u8> {
         match self.read_from_device_file("value") {
-            Ok(s) => {
-                match s.trim() {
-                    "1" => Ok(1),
-                    "0" => Ok(0),
-                    other => Err(Error::Unexpected(format!("value file contents {}", other))),
-                }
-            }
+            Ok(s) => match s.trim() {
+                "1" => Ok(1),
+                "0" => Ok(0),
+                other => Err(Error::Unexpected(format!("value file contents {}", other))),
+            },
             Err(e) => Err(::std::convert::From::from(e)),
         }
     }
@@ -352,10 +365,13 @@ impl Pin {
     /// A 0 value will set the pin low and any other value will
     /// set the pin high (1 is typical).
     pub fn set_value(&self, value: u8) -> Result<()> {
-        self.write_to_device_file("value", match value {
+        self.write_to_device_file(
+            "value",
+            match value {
                 0 => "0",
                 _ => "1",
-            })?;
+            },
+        )?;
 
         Ok(())
     }
@@ -366,15 +382,16 @@ impl Pin {
     /// for interrupts.
     pub fn get_edge(&self) -> Result<Edge> {
         match self.read_from_device_file("edge") {
-            Ok(s) => {
-                match s.trim() {
-                    "none" => Ok(Edge::NoInterrupt),
-                    "rising" => Ok(Edge::RisingEdge),
-                    "falling" => Ok(Edge::FallingEdge),
-                    "both" => Ok(Edge::BothEdges),
-                    other => Err(Error::Unexpected(format!("Unexpected file contents {}", other))),
-                }
-            }
+            Ok(s) => match s.trim() {
+                "none" => Ok(Edge::NoInterrupt),
+                "rising" => Ok(Edge::RisingEdge),
+                "falling" => Ok(Edge::FallingEdge),
+                "both" => Ok(Edge::BothEdges),
+                other => Err(Error::Unexpected(format!(
+                    "Unexpected file contents {}",
+                    other
+                ))),
+            },
             Err(e) => Err(::std::convert::From::from(e)),
         }
     }
@@ -385,12 +402,15 @@ impl Pin {
     /// result in `poll()` returning.  This call will return an Error
     /// if the pin does not allow interrupts.
     pub fn set_edge(&self, edge: Edge) -> Result<()> {
-        self.write_to_device_file("edge", match edge {
+        self.write_to_device_file(
+            "edge",
+            match edge {
                 Edge::NoInterrupt => "none",
                 Edge::RisingEdge => "rising",
                 Edge::FallingEdge => "falling",
                 Edge::BothEdges => "both",
-            })?;
+            },
+        )?;
 
         Ok(())
     }
@@ -398,13 +418,14 @@ impl Pin {
     /// Get polarity of the Pin (`true` is active low)
     pub fn get_active_low(&self) -> Result<bool> {
         match self.read_from_device_file("active_low") {
-            Ok(s) => {
-                match s.trim() {
-                    "1" => Ok(true),
-                    "0" => Ok(false),
-                    other => Err(Error::Unexpected(format!("active_low file contents {}", other))),
-                }
-            }
+            Ok(s) => match s.trim() {
+                "1" => Ok(true),
+                "0" => Ok(false),
+                other => Err(Error::Unexpected(format!(
+                    "active_low file contents {}",
+                    other
+                ))),
+            },
             Err(e) => Err(::std::convert::From::from(e)),
         }
     }
@@ -414,11 +435,13 @@ impl Pin {
     /// This will affect "rising" and "falling" edge triggered
     /// configuration.
     pub fn set_active_low(&self, active_low: bool) -> Result<()> {
-        self.write_to_device_file("active_low",
-                                  match active_low {
-                                      true => "1",
-                                      false => "0",
-                                  })?;
+        self.write_to_device_file(
+            "active_low",
+            match active_low {
+                true => "1",
+                false => "0",
+            },
+        )?;
 
         Ok(())
     }
@@ -454,7 +477,6 @@ impl Pin {
         PinStream::init_with_handle(self.clone(), handle)
     }
 
-
     /// Get a Stream of pin interrupts for this pin
     ///
     /// The PinStream object can be used with the `tokio` crate. You should probably call
@@ -479,7 +501,10 @@ impl Pin {
     /// This method is only available when the `use_tokio` crate feature is enabled.
     #[cfg(feature = "use_tokio")]
     pub fn get_value_stream_with_handle(&self, handle: &Handle) -> Result<PinValueStream> {
-        Ok(PinValueStream(PinStream::init_with_handle(self.clone(), handle)?))
+        Ok(PinValueStream(PinStream::init_with_handle(
+            self.clone(),
+            handle,
+        )?))
     }
 
     /// Get a Stream of pin values for this pin
@@ -538,13 +563,11 @@ impl PinPoller {
         let mut event = EpollEvent::new(EpollFlags::EPOLLPRI | EpollFlags::EPOLLET, 0u64);
 
         match epoll_ctl(epoll_fd, EpollOp::EpollCtlAdd, devfile_fd, &mut event) {
-            Ok(_) => {
-                Ok(PinPoller {
-                       pin_num: pin_num,
-                       devfile: devfile,
-                       epoll_fd: epoll_fd,
-                   })
-            }
+            Ok(_) => Ok(PinPoller {
+                pin_num: pin_num,
+                devfile: devfile,
+                epoll_fd: epoll_fd,
+            }),
             Err(err) => {
                 let _ = close(epoll_fd); // cleanup
                 Err(::std::convert::From::from(err))
@@ -553,7 +576,7 @@ impl PinPoller {
     }
 
     #[cfg(not(any(target_os = "linux", target_os = "android")))]
-    pub fn new(pin_num: u64) -> Result<PinPoller> {
+    pub fn new(_pin_num: u64) -> Result<PinPoller> {
         Err(Error::Unsupported("PinPoller".into()))
     }
 
@@ -581,13 +604,13 @@ impl PinPoller {
         let mut events: [EpollEvent; 1] = [dummy_event];
         let cnt = epoll_wait(self.epoll_fd, &mut events, timeout_ms)?;
         Ok(match cnt {
-               0 => None, // timeout
-               _ => Some(get_value_from_file(&mut self.devfile)?),
-           })
+            0 => None, // timeout
+            _ => Some(get_value_from_file(&mut self.devfile)?),
+        })
     }
 
     #[cfg(not(any(target_os = "linux", target_os = "android")))]
-    pub fn poll(&mut self, timeout_ms: isize) -> Result<Option<u8>> {
+    pub fn poll(&mut self, _timeout_ms: isize) -> Result<Option<u8>> {
         Err(Error::Unsupported("PinPoller".into()))
     }
 }
@@ -617,21 +640,23 @@ impl AsyncPinPoller {
 
 #[cfg(feature = "mio-evented")]
 impl Evented for AsyncPinPoller {
-    fn register(&self,
-                poll: &mio::Poll,
-                token: mio::Token,
-                interest: mio::Ready,
-                opts: mio::PollOpt)
-                -> io::Result<()> {
+    fn register(
+        &self,
+        poll: &mio::Poll,
+        token: mio::Token,
+        interest: mio::Ready,
+        opts: mio::PollOpt,
+    ) -> io::Result<()> {
         EventedFd(&self.devfile.as_raw_fd()).register(poll, token, interest, opts)
     }
 
-    fn reregister(&self,
-                  poll: &mio::Poll,
-                  token: mio::Token,
-                  interest: mio::Ready,
-                  opts: mio::PollOpt)
-                  -> io::Result<()> {
+    fn reregister(
+        &self,
+        poll: &mio::Poll,
+        token: mio::Token,
+        interest: mio::Ready,
+        opts: mio::PollOpt,
+    ) -> io::Result<()> {
         EventedFd(&self.devfile.as_raw_fd()).reregister(poll, token, interest, opts)
     }
 
@@ -650,9 +675,9 @@ pub struct PinStream {
 impl PinStream {
     pub fn init_with_handle(pin: Pin, handle: &Handle) -> Result<Self> {
         Ok(PinStream {
-               evented: PollEvented::new(pin.get_async_poller()?, &handle)?,
-               skipped_first_event: false,
-           })
+            evented: PollEvented::new(pin.get_async_poller()?, &handle)?,
+            skipped_first_event: false,
+        })
     }
 }
 
@@ -660,9 +685,9 @@ impl PinStream {
 impl PinStream {
     pub fn init(pin: Pin) -> Result<Self> {
         Ok(PinStream {
-               evented: PollEvented::new(pin.get_async_poller()?, &Handle::default())?,
-               skipped_first_event: false,
-           })
+            evented: PollEvented::new(pin.get_async_poller()?, &Handle::default())?,
+            skipped_first_event: false,
+        })
     }
 }
 
@@ -673,7 +698,7 @@ impl Stream for PinStream {
 
     fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
         Ok(match self.evented.poll_read() {
-               Async::Ready(()) => {
+            Async::Ready(()) => {
                 self.evented.need_read();
                 if self.skipped_first_event {
                     Async::Ready(Some(()))
@@ -682,8 +707,8 @@ impl Stream for PinStream {
                     Async::NotReady
                 }
             }
-               Async::NotReady => Async::NotReady,
-           })
+            Async::NotReady => Async::NotReady,
+        })
     }
 }
 

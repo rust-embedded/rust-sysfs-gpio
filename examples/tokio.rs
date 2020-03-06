@@ -9,7 +9,7 @@ extern crate tokio;
 use std::env;
 
 #[cfg(feature = "use_tokio")]
-use futures::{Future, lazy, Stream};
+use futures::{lazy, Future, Stream};
 
 #[cfg(feature = "use_tokio")]
 use sysfs_gpio::{Direction, Edge, Pin};
@@ -27,12 +27,15 @@ fn stream(pin_nums: Vec<u64>) -> sysfs_gpio::Result<()> {
             pin.export().unwrap();
             pin.set_direction(Direction::In).unwrap();
             pin.set_edge(Edge::BothEdges).unwrap();
-            tokio::spawn(pin.get_value_stream().unwrap()
-                .for_each(move |val| {
-                    println!("Pin {} changed value to {}", i, val);
-                    Ok(())
-                })
-                .map_err(|_| ()));
+            tokio::spawn(
+                pin.get_value_stream()
+                    .unwrap()
+                    .for_each(move |val| {
+                        println!("Pin {} changed value to {}", i, val);
+                        Ok(())
+                    })
+                    .map_err(|_| ()),
+            );
         }
         Ok(())
     });
