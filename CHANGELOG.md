@@ -5,6 +5,7 @@
 ### Changed
 
 - Migrated to 'tokio' crate. 
+- Minimmum supported Rust version updated to 1.31
 
 ## [0.5.3] - 2018-04-19
 
