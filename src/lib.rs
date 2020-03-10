@@ -48,6 +48,8 @@ extern crate futures;
 extern crate mio;
 extern crate nix;
 #[cfg(feature = "use_tokio")]
+extern crate pin_utils;
+#[cfg(feature = "use_tokio")]
 extern crate tokio;
 
 use std::fs;
@@ -58,18 +60,21 @@ use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::os::unix::prelude::*;
 use std::path::Path;
+use std::pin::{Pin as SPin};
 
 #[cfg(feature = "use_tokio")]
-use futures::{Async, Poll, Stream};
+use futures::{Stream, task::{Context, Poll}};
 #[cfg(feature = "mio-evented")]
 use mio::unix::EventedFd;
 #[cfg(feature = "mio-evented")]
-use mio::Evented;
+use mio::{Evented, Ready};
 #[cfg(any(target_os = "linux", target_os = "android"))]
 use nix::sys::epoll::*;
 use nix::unistd::close;
 #[cfg(feature = "use_tokio")]
-use tokio::reactor::{Handle, PollEvented};
+use pin_utils::unsafe_pinned;
+#[cfg(feature = "use_tokio")]
+use tokio::{io::PollEvented, runtime::Handle};
 
 pub use error::Error;
 
@@ -473,17 +478,6 @@ impl Pin {
     ///
     /// This method is only available when the `use_tokio` crate feature is enabled.
     #[cfg(feature = "use_tokio")]
-    pub fn get_stream_with_handle(&self, handle: &Handle) -> Result<PinStream> {
-        PinStream::init_with_handle(self.clone(), handle)
-    }
-
-    /// Get a Stream of pin interrupts for this pin
-    ///
-    /// The PinStream object can be used with the `tokio` crate. You should probably call
-    /// `set_edge()` before using this.
-    ///
-    /// This method is only available when the `use_tokio` crate feature is enabled.
-    #[cfg(feature = "use_tokio")]
     pub fn get_stream(&self) -> Result<PinStream> {
         PinStream::init(self.clone())
     }
@@ -500,11 +494,8 @@ impl Pin {
     ///
     /// This method is only available when the `use_tokio` crate feature is enabled.
     #[cfg(feature = "use_tokio")]
-    pub fn get_value_stream_with_handle(&self, handle: &Handle) -> Result<PinValueStream> {
-        Ok(PinValueStream(PinStream::init_with_handle(
-            self.clone(),
-            handle,
-        )?))
+    pub fn get_value_stream_with_handle(&self, _handle: &Handle) -> Result<PinValueStream> {
+        Ok(PinValueStream::new(PinStream::init(self.clone())?))
     }
 
     /// Get a Stream of pin values for this pin
@@ -520,7 +511,7 @@ impl Pin {
     /// This method is only available when the `use_tokio` crate feature is enabled.
     #[cfg(feature = "use_tokio")]
     pub fn get_value_stream(&self) -> Result<PinValueStream> {
-        Ok(PinValueStream(PinStream::init(self.clone())?))
+        Ok(PinValueStream::new(PinStream::init(self.clone())?))
     }
 }
 
@@ -673,19 +664,9 @@ pub struct PinStream {
 
 #[cfg(feature = "use_tokio")]
 impl PinStream {
-    pub fn init_with_handle(pin: Pin, handle: &Handle) -> Result<Self> {
-        Ok(PinStream {
-            evented: PollEvented::new(pin.get_async_poller()?, &handle)?,
-            skipped_first_event: false,
-        })
-    }
-}
-
-#[cfg(feature = "use_tokio")]
-impl PinStream {
     pub fn init(pin: Pin) -> Result<Self> {
         Ok(PinStream {
-            evented: PollEvented::new(pin.get_async_poller()?, &Handle::default())?,
+            evented: PollEvented::new(pin.get_async_poller()?)?,
             skipped_first_event: false,
         })
     }
@@ -693,50 +674,63 @@ impl PinStream {
 
 #[cfg(feature = "use_tokio")]
 impl Stream for PinStream {
-    type Item = ();
-    type Error = Error;
+    type Item = Result<()>;
 
-    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
-        Ok(match self.evented.poll_read() {
-            Async::Ready(()) => {
-                self.evented.need_read();
-                if self.skipped_first_event {
-                    Async::Ready(Some(()))
-                } else {
-                    self.skipped_first_event = true;
-                    Async::NotReady
+    fn poll_next(mut self: SPin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
+        match self.evented.poll_read_ready(cx, Ready::readable()) {
+            Poll::Ready(res) => {
+                match res {
+                    Ok(_) => {
+                        let _ = self.evented.clear_read_ready(cx, Ready::readable());
+                        if self.skipped_first_event {
+                            Poll::Ready(Some(Ok(())))
+                        } else {
+                            self.as_mut().skipped_first_event = true;
+                            Poll::Pending
+                        }
+                    }
+                    Err(e) => Poll::Ready(Some(Err(Error::Io(e))))
                 }
             }
-            Async::NotReady => Async::NotReady,
-        })
+            Poll::Pending => Poll::Pending,
+        }
     }
 }
 
 #[cfg(feature = "use_tokio")]
-pub struct PinValueStream(PinStream);
+pub struct PinValueStream { inner: PinStream }
 
 #[cfg(feature = "use_tokio")]
 impl PinValueStream {
+    unsafe_pinned!(inner: PinStream);
+    
+    fn new(inner: PinStream) -> Self {
+        PinValueStream { inner }
+    }
+    
     #[inline]
     fn get_value(&mut self) -> Result<u8> {
-        get_value_from_file(&mut self.0.evented.get_mut().devfile)
+        get_value_from_file(&mut self.inner.evented.get_mut().devfile)
     }
 }
 
 #[cfg(feature = "use_tokio")]
 impl Stream for PinValueStream {
-    type Item = u8;
-    type Error = Error;
+    type Item = Result<u8>;
 
-    fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
-        match self.0.poll() {
-            Ok(Async::Ready(Some(()))) => {
-                let value = self.get_value()?;
-                Ok(Async::Ready(Some(value)))
+    fn poll_next(mut self: SPin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
+        match self.as_mut().inner().poll_next(cx) {
+            Poll::Ready(Some(res)) => {
+                match res {
+                    Ok(_) => {
+                        let value = self.get_value();
+                        Poll::Ready(Some(value))
+                    }
+                    Err(e) => Poll::Ready(Some(Err(e)))
+                }
             }
-            Ok(Async::Ready(None)) => Ok(Async::Ready(None)),
-            Ok(Async::NotReady) => Ok(Async::NotReady),
-            Err(e) => Err(e),
+            Poll::Ready(None) => Poll::Ready(None),
+            Poll::Pending => Poll::Pending,
         }
     }
 }

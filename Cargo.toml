@@ -14,7 +14,8 @@ mio-evented = ["mio"]
 use_tokio = ["futures", "tokio", "mio-evented"]
 
 [dependencies]
-futures = { version = "0.1", optional = true }
+futures = { version = "0.3", optional = true }
 nix = "0.14.0"
 mio = { version = "0.6", optional = true }
-tokio = { version = "0.1", optional = true }
+tokio = { version = "0.2", optional = true, features = ["io-driver"] }
+pin-utils = "0.1.0-alpha.4"
