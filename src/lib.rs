@@ -74,7 +74,7 @@ use nix::unistd::close;
 #[cfg(feature = "use_tokio")]
 use pin_utils::unsafe_pinned;
 #[cfg(feature = "use_tokio")]
-use tokio::{io::PollEvented, runtime::Handle};
+use tokio::io::PollEvented;
 
 pub use error::Error;
 
@@ -480,22 +480,6 @@ impl Pin {
     #[cfg(feature = "use_tokio")]
     pub fn get_stream(&self) -> Result<PinStream> {
         PinStream::init(self.clone())
-    }
-
-    /// Get a Stream of pin values for this pin
-    ///
-    /// The PinStream object can be used with the `tokio` crate. You should probably call
-    /// `set_edge(Edge::BothEdges)` before using this.
-    ///
-    /// Note that the values produced are the value of the pin as soon as we get to handling the
-    /// interrupt in userspace.  Each time this stream produces a value, a change has occurred, but
-    /// it could end up producing the same value multiple times if the value has changed back
-    /// between when the interrupt occurred and when the value was read.
-    ///
-    /// This method is only available when the `use_tokio` crate feature is enabled.
-    #[cfg(feature = "use_tokio")]
-    pub fn get_value_stream_with_handle(&self, _handle: &Handle) -> Result<PinValueStream> {
-        Ok(PinValueStream::new(PinStream::init(self.clone())?))
     }
 
     /// Get a Stream of pin values for this pin
