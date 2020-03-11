@@ -54,7 +54,7 @@ use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
-#[cfg(any(target_os = "linux", target_os = "android"))]
+#[cfg(any(target_os = "linux", target_os = "android", feature = "use_tokio"))]
 use std::io::SeekFrom;
 use std::os::unix::prelude::*;
 use std::path::Path;
@@ -123,7 +123,7 @@ fn flush_input_from_file(dev_file: &mut File, max: usize) -> io::Result<usize> {
 }
 
 /// Get the pin value from the provided file
-#[cfg(any(target_os = "linux", target_os = "android"))]
+#[cfg(any(target_os = "linux", target_os = "android", feature = "use_tokio"))]
 fn get_value_from_file(dev_file: &mut File) -> Result<u8> {
     let mut s = String::with_capacity(10);
     dev_file.seek(SeekFrom::Start(0))?;
