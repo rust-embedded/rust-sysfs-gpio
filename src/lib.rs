@@ -102,7 +102,7 @@ macro_rules! try_unexport {
         match $e {
             Ok(res) => res,
             Err(e) => {
-                try!($gpio.unexport());
+                $gpio.unexport()?;
                 return Err(e);
             }
         }
@@ -217,8 +217,8 @@ impl Pin {
     /// let gpio = Pin::new(24);
     /// let res = gpio.with_exported(|| {
     ///     println!("At this point, the Pin is exported");
-    ///     try!(gpio.set_direction(Direction::Low));
-    ///     try!(gpio.set_value(1));
+    ///     gpio.set_direction(Direction::Low)?;
+    ///     gpio.set_value(1)?;
     ///     // ...
     ///     Ok(())
     /// });
@@ -731,7 +731,7 @@ impl Stream for PinValueStream {
     fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
         match self.0.poll() {
             Ok(Async::Ready(Some(()))) => {
-                let value = try!(self.get_value());
+                let value = self.get_value()?;
                 Ok(Async::Ready(Some(value)))
             }
             Ok(Async::Ready(None)) => Ok(Async::Ready(None)),
