@@ -60,6 +60,7 @@ use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::os::unix::prelude::*;
 use std::path::Path;
+#[cfg(feature = "use_tokio")]
 use std::pin::{Pin as SPin};
 
 #[cfg(feature = "use_tokio")]
