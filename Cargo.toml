@@ -18,4 +18,4 @@ futures = { version = "0.3", optional = true }
 nix = "0.14.0"
 mio = { version = "0.6", optional = true }
 tokio = { version = "0.2", optional = true, features = ["io-driver"] }
-pin-utils = "0.1.0-alpha.4"
+pin-project-lite = "0.1.4"

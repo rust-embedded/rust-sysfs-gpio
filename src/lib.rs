@@ -48,7 +48,7 @@ extern crate futures;
 extern crate mio;
 extern crate nix;
 #[cfg(feature = "use_tokio")]
-extern crate pin_utils;
+extern crate pin_project_lite;
 #[cfg(feature = "use_tokio")]
 extern crate tokio;
 
@@ -73,7 +73,7 @@ use mio::{Evented, Ready};
 use nix::sys::epoll::*;
 use nix::unistd::close;
 #[cfg(feature = "use_tokio")]
-use pin_utils::unsafe_pinned;
+use pin_project_lite::pin_project;
 #[cfg(feature = "use_tokio")]
 use tokio::io::PollEvented;
 
@@ -683,12 +683,16 @@ impl Stream for PinStream {
 }
 
 #[cfg(feature = "use_tokio")]
-pub struct PinValueStream { inner: PinStream }
+pin_project! {
+    pub struct PinValueStream {
+        #[pin]
+        inner: PinStream
+    }
+}
 
 #[cfg(feature = "use_tokio")]
 impl PinValueStream {
-    unsafe_pinned!(inner: PinStream);
-    
+   
     fn new(inner: PinStream) -> Self {
         PinValueStream { inner }
     }
@@ -704,7 +708,7 @@ impl Stream for PinValueStream {
     type Item = Result<u8>;
 
     fn poll_next(mut self: SPin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
-        match self.as_mut().inner().poll_next(cx) {
+        match self.as_mut().project().inner.poll_next(cx) {
             Poll::Ready(Some(res)) => {
                 match res {
                     Ok(_) => {
