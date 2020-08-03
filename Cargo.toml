@@ -8,6 +8,7 @@ homepage = "https://github.com/rust-embedded/rust-sysfs-gpio"
 documentation = "http://rust-embedded.github.io/rust-sysfs-gpio/"
 description = "Provides access to GPIOs using the Linux sysfs interface."
 readme = "README.md"
+edition = "2018"
 
 [features]
 mio-evented = ["mio"]
