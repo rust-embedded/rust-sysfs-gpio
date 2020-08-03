@@ -20,3 +20,10 @@ nix = "0.14.0"
 mio = { version = "0.6", optional = true }
 tokio = { version = "0.2", optional = true, features = ["io-driver"] }
 pin-project-lite = "0.1.4"
+
+[dev-dependencies]
+tokio = { version = "0.2", features = ["macros", "rt-core"] }
+
+[[example]]
+name = "tokio"
+required-features = ["use_tokio"]
