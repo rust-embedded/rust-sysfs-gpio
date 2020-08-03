@@ -22,3 +22,10 @@ futures = { version = "0.3", optional = true }
 nix = "0.22"
 mio = { version = "0.7", optional = true, features = ["os-ext"]}
 tokio = { version = "1", optional = true, features = ["net"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+
+[[example]]
+name = "tokio"
+required-features = ["async-tokio"]
