@@ -46,6 +46,7 @@
 extern crate futures;
 #[cfg(feature = "mio-evented")]
 extern crate mio;
+#[cfg(not(target_os = "wasi"))]
 extern crate nix;
 #[cfg(feature = "use_tokio")]
 extern crate tokio;
@@ -56,6 +57,7 @@ use std::io;
 use std::io::prelude::*;
 #[cfg(any(target_os = "linux", target_os = "android", feature = "use_tokio"))]
 use std::io::SeekFrom;
+#[cfg(not(target_os = "wasi"))]
 use std::os::unix::prelude::*;
 use std::path::Path;
 
@@ -67,6 +69,7 @@ use mio::unix::EventedFd;
 use mio::Evented;
 #[cfg(any(target_os = "linux", target_os = "android"))]
 use nix::sys::epoll::*;
+#[cfg(not(target_os = "wasi"))]
 use nix::unistd::close;
 #[cfg(feature = "use_tokio")]
 use tokio::reactor::{Handle, PollEvented};
@@ -451,6 +454,7 @@ impl Pin {
     /// This pin poller object will register an interrupt with the
     /// kernel and allow you to poll() on it and receive notifications
     /// that an interrupt has occured with minimal delay.
+    #[cfg(not(target_os = "wasi"))]
     pub fn get_poller(&self) -> Result<PinPoller> {
         PinPoller::new(self.pin_num)
     }
@@ -537,14 +541,14 @@ fn extract_pin_fom_path_test() {
     let err2 = Pin::extract_pin_from_path(&"/sys/class/gpio/gpioSDS");
     assert_eq!(true, err2.is_err());
 }
-
+#[cfg(not(target_os = "wasi"))]
 #[derive(Debug)]
 pub struct PinPoller {
     pin_num: u64,
     epoll_fd: RawFd,
     devfile: File,
 }
-
+#[cfg(not(target_os = "wasi"))]
 impl PinPoller {
     /// Get the pin associated with this PinPoller
     ///
@@ -615,6 +619,7 @@ impl PinPoller {
     }
 }
 
+#[cfg(not(target_os = "wasi"))]
 impl Drop for PinPoller {
     fn drop(&mut self) {
         // we implement drop to close the underlying epoll fd as

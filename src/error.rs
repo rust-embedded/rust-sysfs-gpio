@@ -1,3 +1,4 @@
+#[cfg(not(target_os = "wasi"))]
 use nix;
 use std::convert;
 use std::fmt;
@@ -49,7 +50,7 @@ impl convert::From<io::Error> for Error {
         Error::Io(e)
     }
 }
-
+#[cfg(not(target_os = "wasi"))]
 impl convert::From<nix::Error> for Error {
     fn from(e: nix::Error) -> Error {
         match e {
