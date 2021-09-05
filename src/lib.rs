@@ -198,7 +198,7 @@ impl Pin {
             .file_name()
             .and_then(|filename| filename.to_str())
             .and_then(|filename_str| filename_str.trim_start_matches("gpio").parse::<u64>().ok())
-            .ok_or(Error::InvalidPath(format!("{:?}", path.as_ref())))
+            .ok_or_else(|| Error::InvalidPath(format!("{:?}", path.as_ref())))
     }
 
     /// Get the pin number
