@@ -42,6 +42,8 @@
 //! }
 //! ```
 
+#![cfg_attr(feature = "async-tokio", allow(deprecated))]
+
 #[cfg(feature = "async-tokio")]
 extern crate futures;
 #[cfg(feature = "mio-evented")]
