@@ -161,7 +161,7 @@ impl Pin {
     ///
     /// This function does not export the provided pin_num.
     pub fn new(pin_num: u64) -> Pin {
-        Pin { pin_num: pin_num }
+        Pin { pin_num }
     }
 
     /// Create a new Pin with the provided path
@@ -568,9 +568,9 @@ impl PinPoller {
 
         match epoll_ctl(epoll_fd, EpollOp::EpollCtlAdd, devfile_fd, &mut event) {
             Ok(_) => Ok(PinPoller {
-                pin_num: pin_num,
-                devfile: devfile,
-                epoll_fd: epoll_fd,
+                pin_num,
+                devfile,
+                epoll_fd,
             }),
             Err(err) => {
                 let _ = close(epoll_fd); // cleanup
