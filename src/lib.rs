@@ -478,7 +478,7 @@ impl Pin {
     /// This method is only available when the `use_tokio` crate feature is enabled.
     #[cfg(feature = "use_tokio")]
     pub fn get_stream_with_handle(&self, handle: &Handle) -> Result<PinStream> {
-        PinStream::init_with_handle(self.clone(), handle)
+        PinStream::init_with_handle(*self, handle)
     }
 
     /// Get a Stream of pin interrupts for this pin
@@ -489,7 +489,7 @@ impl Pin {
     /// This method is only available when the `use_tokio` crate feature is enabled.
     #[cfg(feature = "use_tokio")]
     pub fn get_stream(&self) -> Result<PinStream> {
-        PinStream::init(self.clone())
+        PinStream::init(*self)
     }
 
     /// Get a Stream of pin values for this pin
@@ -505,10 +505,7 @@ impl Pin {
     /// This method is only available when the `use_tokio` crate feature is enabled.
     #[cfg(feature = "use_tokio")]
     pub fn get_value_stream_with_handle(&self, handle: &Handle) -> Result<PinValueStream> {
-        Ok(PinValueStream(PinStream::init_with_handle(
-            self.clone(),
-            handle,
-        )?))
+        Ok(PinValueStream(PinStream::init_with_handle(*self, handle)?))
     }
 
     /// Get a Stream of pin values for this pin
@@ -524,7 +521,7 @@ impl Pin {
     /// This method is only available when the `use_tokio` crate feature is enabled.
     #[cfg(feature = "use_tokio")]
     pub fn get_value_stream(&self) -> Result<PinValueStream> {
-        Ok(PinValueStream(PinStream::init(self.clone())?))
+        Ok(PinValueStream(PinStream::init(*self)?))
     }
 }
 
@@ -639,7 +636,7 @@ pub struct AsyncPinPoller {
 impl AsyncPinPoller {
     fn new(pin_num: u64) -> Result<Self> {
         let devfile = File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num))?;
-        Ok(AsyncPinPoller { devfile: devfile })
+        Ok(AsyncPinPoller { devfile })
     }
 }
 
@@ -680,7 +677,7 @@ pub struct PinStream {
 impl PinStream {
     pub fn init_with_handle(pin: Pin, handle: &Handle) -> Result<Self> {
         Ok(PinStream {
-            evented: PollEvented::new(pin.get_async_poller()?, &handle)?,
+            evented: PollEvented::new(pin.get_async_poller()?, handle)?,
             skipped_first_event: false,
         })
     }
