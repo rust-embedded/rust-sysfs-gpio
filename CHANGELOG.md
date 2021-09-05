@@ -4,6 +4,7 @@
 
 ### Changed
 
+- [breaking-change] Renamed `use_tokio` feature `async-tokio`.
 - Migrated to 'tokio' crate.
 - Updated `nix` to version 0.22.
 - Minimmum supported Rust version updated to 1.46.0.

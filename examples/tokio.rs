@@ -1,20 +1,20 @@
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 extern crate futures;
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 extern crate sysfs_gpio;
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 extern crate tokio;
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 use std::env;
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 use futures::{lazy, Future, Stream};
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 use sysfs_gpio::{Direction, Edge, Pin};
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 fn stream(pin_nums: Vec<u64>) -> sysfs_gpio::Result<()> {
     // NOTE: this currently runs forever and as such if
     // the app is stopped (Ctrl-C), no cleanup will happen
@@ -44,7 +44,7 @@ fn stream(pin_nums: Vec<u64>) -> sysfs_gpio::Result<()> {
     Ok(())
 }
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 fn main() {
     let pins: Vec<u64> = env::args()
         .skip(1)
@@ -57,7 +57,7 @@ fn main() {
     }
 }
 
-#[cfg(not(feature = "use_tokio"))]
+#[cfg(not(feature = "async-tokio"))]
 fn main() {
     println!("This example requires the `tokio` feature to be enabled.");
 }

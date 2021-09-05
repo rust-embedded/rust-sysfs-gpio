@@ -11,7 +11,7 @@ readme = "README.md"
 
 [features]
 mio-evented = ["mio"]
-use_tokio = ["futures", "tokio", "mio-evented"]
+async-tokio = ["futures", "tokio", "mio-evented"]
 
 [dependencies]
 futures = { version = "0.1", optional = true }
