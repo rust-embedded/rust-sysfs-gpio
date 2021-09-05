@@ -704,7 +704,7 @@ impl Stream for PinStream {
     fn poll(&mut self) -> Poll<Option<Self::Item>, Self::Error> {
         Ok(match self.evented.poll_read() {
             Async::Ready(()) => {
-                self.evented.need_read();
+                self.evented.need_read()?;
                 if self.skipped_first_event {
                     Async::Ready(Some(()))
                 } else {
