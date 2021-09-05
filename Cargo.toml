@@ -5,7 +5,7 @@ authors = ["Paul Osborne <osbpau@gmail.com>"]
 license = "MIT/Apache-2.0"
 repository = "https://github.com/rust-embedded/rust-sysfs-gpio"
 homepage = "https://github.com/rust-embedded/rust-sysfs-gpio"
-documentation = "http://rust-embedded.github.io/rust-sysfs-gpio/"
+documentation = "https://docs.rs/sysfs_gpio/"
 description = "Provides access to GPIOs using the Linux sysfs interface."
 readme = "README.md"
 
