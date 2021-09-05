@@ -13,7 +13,7 @@
 //!
 //! The methods exposed by this library are centered around
 //! the `Pin` struct and map pretty directly the API exposed
-//! by the kernel in syfs (https://www.kernel.org/doc/Documentation/gpio/sysfs.txt).
+//! by the kernel in syfs <https://www.kernel.org/doc/Documentation/gpio/sysfs.txt>.
 //!
 //! # Examples
 //!
