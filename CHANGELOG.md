@@ -4,8 +4,9 @@
 
 ### Changed
 
-- Migrated to 'tokio' crate. 
-- Minimmum supported Rust version updated to 1.31
+- Migrated to 'tokio' crate.
+- Updated `nix` to version 0.22.
+- Minimmum supported Rust version updated to 1.46.0.
 
 ## [0.5.3] - 2018-04-19
 
