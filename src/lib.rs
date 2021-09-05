@@ -42,26 +42,26 @@
 //! }
 //! ```
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 extern crate futures;
 #[cfg(feature = "mio-evented")]
 extern crate mio;
 #[cfg(not(target_os = "wasi"))]
 extern crate nix;
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 extern crate tokio;
 
 use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
-#[cfg(any(target_os = "linux", target_os = "android", feature = "use_tokio"))]
+#[cfg(any(target_os = "linux", target_os = "android", feature = "async-tokio"))]
 use std::io::SeekFrom;
 #[cfg(not(target_os = "wasi"))]
 use std::os::unix::prelude::*;
 use std::path::Path;
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 use futures::{Async, Poll, Stream};
 #[cfg(feature = "mio-evented")]
 use mio::unix::EventedFd;
@@ -71,7 +71,7 @@ use mio::Evented;
 use nix::sys::epoll::*;
 #[cfg(not(target_os = "wasi"))]
 use nix::unistd::close;
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 use tokio::reactor::{Handle, PollEvented};
 
 pub use error::Error;
@@ -126,7 +126,7 @@ fn flush_input_from_file(dev_file: &mut File, max: usize) -> io::Result<usize> {
 }
 
 /// Get the pin value from the provided file
-#[cfg(any(target_os = "linux", target_os = "android", feature = "use_tokio"))]
+#[cfg(any(target_os = "linux", target_os = "android", feature = "async-tokio"))]
 fn get_value_from_file(dev_file: &mut File) -> Result<u8> {
     let mut s = String::with_capacity(10);
     dev_file.seek(SeekFrom::Start(0))?;
@@ -475,8 +475,8 @@ impl Pin {
     /// The PinStream object can be used with the `tokio` crate. You should probably call
     /// `set_edge()` before using this.
     ///
-    /// This method is only available when the `use_tokio` crate feature is enabled.
-    #[cfg(feature = "use_tokio")]
+    /// This method is only available when the `async-tokio` crate feature is enabled.
+    #[cfg(feature = "async-tokio")]
     pub fn get_stream_with_handle(&self, handle: &Handle) -> Result<PinStream> {
         PinStream::init_with_handle(*self, handle)
     }
@@ -486,8 +486,8 @@ impl Pin {
     /// The PinStream object can be used with the `tokio` crate. You should probably call
     /// `set_edge()` before using this.
     ///
-    /// This method is only available when the `use_tokio` crate feature is enabled.
-    #[cfg(feature = "use_tokio")]
+    /// This method is only available when the `async-tokio` crate feature is enabled.
+    #[cfg(feature = "async-tokio")]
     pub fn get_stream(&self) -> Result<PinStream> {
         PinStream::init(*self)
     }
@@ -502,8 +502,8 @@ impl Pin {
     /// it could end up producing the same value multiple times if the value has changed back
     /// between when the interrupt occurred and when the value was read.
     ///
-    /// This method is only available when the `use_tokio` crate feature is enabled.
-    #[cfg(feature = "use_tokio")]
+    /// This method is only available when the `async-tokio` crate feature is enabled.
+    #[cfg(feature = "async-tokio")]
     pub fn get_value_stream_with_handle(&self, handle: &Handle) -> Result<PinValueStream> {
         Ok(PinValueStream(PinStream::init_with_handle(*self, handle)?))
     }
@@ -518,8 +518,8 @@ impl Pin {
     /// it could end up producing the same value multiple times if the value has changed back
     /// between when the interrupt occurred and when the value was read.
     ///
-    /// This method is only available when the `use_tokio` crate feature is enabled.
-    #[cfg(feature = "use_tokio")]
+    /// This method is only available when the `async-tokio` crate feature is enabled.
+    #[cfg(feature = "async-tokio")]
     pub fn get_value_stream(&self) -> Result<PinValueStream> {
         Ok(PinValueStream(PinStream::init(*self)?))
     }
@@ -667,13 +667,13 @@ impl Evented for AsyncPinPoller {
     }
 }
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 pub struct PinStream {
     evented: PollEvented<AsyncPinPoller>,
     skipped_first_event: bool,
 }
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 impl PinStream {
     pub fn init_with_handle(pin: Pin, handle: &Handle) -> Result<Self> {
         Ok(PinStream {
@@ -683,7 +683,7 @@ impl PinStream {
     }
 }
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 impl PinStream {
     pub fn init(pin: Pin) -> Result<Self> {
         Ok(PinStream {
@@ -693,7 +693,7 @@ impl PinStream {
     }
 }
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 impl Stream for PinStream {
     type Item = ();
     type Error = Error;
@@ -714,10 +714,10 @@ impl Stream for PinStream {
     }
 }
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 pub struct PinValueStream(PinStream);
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 impl PinValueStream {
     #[inline]
     fn get_value(&mut self) -> Result<u8> {
@@ -725,7 +725,7 @@ impl PinValueStream {
     }
 }
 
-#[cfg(feature = "use_tokio")]
+#[cfg(feature = "async-tokio")]
 impl Stream for PinValueStream {
     type Item = u8;
     type Error = Error;
