@@ -58,9 +58,9 @@ fn get_args() -> Option<Arguments> {
         Err(_) => return None,
     };
     Some(Arguments {
-        pin: pin,
-        duration_ms: duration_ms,
-        period_ms: period_ms,
+        pin,
+        duration_ms,
+        period_ms,
     })
 }
 
