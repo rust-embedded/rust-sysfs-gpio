@@ -1,5 +1,3 @@
-#[cfg(not(target_os = "wasi"))]
-use nix;
 use std::convert;
 use std::fmt;
 use std::io;
