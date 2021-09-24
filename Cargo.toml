@@ -1,6 +1,6 @@
 [package]
 name = "sysfs_gpio"
-version = "0.5.4"
+version = "0.6.0" # remember to update html_root_url
 authors = [
     "Paul Osborne <osbpau@gmail.com>",
     "The Embedded Linux Team <embedded-linux@teams.rust-embedded.org>",

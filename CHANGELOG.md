@@ -2,15 +2,16 @@
 
 ## [master] - Unreleased
 
+## [0.6.0] - 2021-09-24
+
 ### Changed
 
 - [breaking-change] Renamed `use_tokio` feature `async-tokio`.
-- Migrated to 'tokio' crate.
+- Migrated to `tokio` crate version 1.
 - Updated `nix` to version 0.22.
-- Minimmum supported Rust version updated to 1.46.0.
-- Updated `tokio`to version 1.
 - Updated `mio` to version 0.7.
 - Updated `futures` to version 0.3.
+- Minimmum supported Rust version updated to 1.46.0.
 
 ## [0.5.3] - 2018-04-19
 
@@ -176,7 +177,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[master]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.3...master
+[master]: https://github.com/posborne/rust-sysfs-gpio/compare/0.6.0...master
+[0.6.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.2...0.5.3
 [0.5.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.1...0.5.2
 [0.5.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.0...0.5.1

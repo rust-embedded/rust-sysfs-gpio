@@ -3,6 +3,7 @@ sysfs_gpio
 
 [![Build Status](https://github.com/rust-embedded/rust-sysfs-gpio/workflows/CI/badge.svg)](https://github.com/rust-embedded/rust-sysfs-gpio/actions)
 [![Version](https://img.shields.io/crates/v/sysfs-gpio.svg)](https://crates.io/crates/sysfs-gpio)
+![Minimum Supported Rust Version](https://img.shields.io/badge/rustc-1.46+-blue.svg)
 [![License](https://img.shields.io/crates/l/sysfs-gpio.svg)](https://github.com/rust-embedded/rust-sysfs-gpio/blob/master/README.md#license)
 
 - [API Documentation](https://docs.rs/sysfs_gpio)
@@ -27,13 +28,13 @@ To use `sysfs_gpio`, first add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-sysfs_gpio = "0.5"
+sysfs_gpio = "0.6"
 ```
 
 Then, add this to your crate root:
 
 ```rust
-extern crate sysfs_gpio;
+use sysfs_gpio;
 ```
 
 ## Example/API
@@ -41,8 +42,6 @@ extern crate sysfs_gpio;
 Blinking an LED:
 
 ```rust
-extern crate sysfs_gpio;
-
 use sysfs_gpio::{Direction, Pin};
 use std::thread::sleep;
 use std::time::Duration;
