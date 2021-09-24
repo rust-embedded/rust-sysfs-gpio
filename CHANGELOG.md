@@ -177,22 +177,22 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[master]: https://github.com/posborne/rust-sysfs-gpio/compare/0.6.0...master
-[0.6.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.3...0.6.0
-[0.5.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.2...0.5.3
-[0.5.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.1...0.5.2
-[0.5.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.5.0...0.5.1
-[0.5.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.4...0.5.0
-[0.4.4]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.3...0.4.4
-[0.4.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.2...0.4.3
-[0.4.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.1...0.4.2
-[0.4.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.4.0...0.4.1
-[0.4.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.3...0.4.0
-[0.3.3]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.2...0.3.3
-[0.3.2]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.1...0.3.2
-[0.3.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.3.0...0.3.1
-[0.3.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.1...0.3.0
-[0.2.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.2.0...0.2.1
-[0.2.0]: https://github.com/posborne/rust-sysfs-gpio/compare/0.1.1...0.2.0
-[0.1.1]: https://github.com/posborne/rust-sysfs-gpio/compare/0.1.0...0.1.1
-[0.1.0]: https://github.com/posborne/rust-sysfs-gpio/compare/33b28ae3115d91ae6612245e5b8d8c636dcdb69c...0.1.0
+[master]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.6.0...master
+[0.6.0]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.5.3...0.6.0
+[0.5.3]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.5.2...0.5.3
+[0.5.2]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.5.1...0.5.2
+[0.5.1]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.5.0...0.5.1
+[0.5.0]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.4.4...0.5.0
+[0.4.4]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.4.3...0.4.4
+[0.4.3]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.4.2...0.4.3
+[0.4.2]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.4.1...0.4.2
+[0.4.1]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.4.0...0.4.1
+[0.4.0]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.3.3...0.4.0
+[0.3.3]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.3.2...0.3.3
+[0.3.2]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.3.1...0.3.2
+[0.3.1]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.3.0...0.3.1
+[0.3.0]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.2.1...0.3.0
+[0.2.1]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.2.0...0.2.1
+[0.2.0]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.1.1...0.2.0
+[0.1.1]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.1.0...0.1.1
+[0.1.0]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/33b28ae3115d91ae6612245e5b8d8c636dcdb69c...0.1.0
