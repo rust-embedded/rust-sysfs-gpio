@@ -22,8 +22,6 @@
 //! the following:
 //!
 //! ```no_run
-//! extern crate sysfs_gpio;
-//!
 //! use sysfs_gpio::{Direction, Pin};
 //! use std::thread::sleep;
 //! use std::time::Duration;
@@ -43,6 +41,7 @@
 //! ```
 
 #![cfg_attr(feature = "async-tokio", allow(deprecated))]
+#![doc(html_root_url = "https://docs.rs/sysfs-gpio/0.6.0")]
 
 #[cfg(feature = "async-tokio")]
 extern crate futures;

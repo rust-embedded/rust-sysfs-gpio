@@ -6,8 +6,6 @@
 // option.  This file may not be copied, modified, or distributed
 // except according to those terms.
 
-extern crate sysfs_gpio;
-
 use std::env;
 use std::io::prelude::*;
 use std::io::stdout;

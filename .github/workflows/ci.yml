@@ -65,8 +65,40 @@ jobs:
           command: test
           args: --target=${{ matrix.TARGET }} ${{ matrix.FEATURES }}
 
+  ci-linux-msrv:
+    name: CI
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [1.46.0]
+        FEATURES: ["", "--features=async-tokio", "--features=mio-evented"]
+        TARGET:
+          - x86_64-unknown-linux-gnu
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.TARGET }}
+          override: true
+
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target=${{ matrix.TARGET }} ${{ matrix.FEATURES }}
+
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: true
+          command: test
+          args: --target=${{ matrix.TARGET }} ${{ matrix.FEATURES }}
+
   ci-macos:
-    name: CI-macOS
+    name: CI
     runs-on: macos-11
 
     strategy:
