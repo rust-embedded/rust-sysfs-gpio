@@ -1,7 +1,7 @@
 sysfs_gpio
 ==========
 
-[![Build Status](https://travis-ci.org/rust-embedded/rust-sysfs-gpio.svg?branch=master)](https://travis-ci.org/rust-embedded/rust-sysfs-gpio)
+[![Build Status](https://github.com/rust-embedded/rust-sysfs-gpio/workflows/CI/badge.svg)](https://github.com/rust-embedded/rust-sysfs-gpio/actions)
 [![Version](https://img.shields.io/crates/v/sysfs-gpio.svg)](https://crates.io/crates/sysfs-gpio)
 [![License](https://img.shields.io/crates/l/sysfs-gpio.svg)](https://github.com/rust-embedded/rust-sysfs-gpio/blob/master/README.md#license)
 
