@@ -8,6 +8,9 @@
 - Migrated to 'tokio' crate.
 - Updated `nix` to version 0.22.
 - Minimmum supported Rust version updated to 1.46.0.
+- Updated `tokio`to version 1.
+- Updated `mio` to version 0.7.
+- Updated `futures` to version 0.3.
 
 ## [0.5.3] - 2018-04-19
 
