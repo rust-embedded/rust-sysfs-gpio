@@ -1,6 +1,6 @@
 [package]
 name = "sysfs_gpio"
-version = "0.6.0" # remember to update html_root_url
+version = "0.6.1"
 authors = [
     "Paul Osborne <osbpau@gmail.com>",
     "The Embedded Linux Team <embedded-linux@teams.rust-embedded.org>",
@@ -19,8 +19,8 @@ async-tokio = ["futures", "tokio", "mio-evented"]
 
 [dependencies]
 futures = { version = "0.3", optional = true }
-nix = ">= 0.22, < 0.24"
-mio = { version = "0.7", optional = true, features = ["os-ext"]}
+nix = "0.23"
+mio = { version = "0.8", optional = true, features = ["os-ext"]}
 tokio = { version = "1", optional = true, features = ["net"] }
 
 [dev-dependencies]
