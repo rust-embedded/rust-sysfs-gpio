@@ -41,7 +41,6 @@
 //! ```
 
 #![cfg_attr(feature = "async-tokio", allow(deprecated))]
-#![doc(html_root_url = "https://docs.rs/sysfs-gpio/0.6.0")]
 
 #[cfg(feature = "async-tokio")]
 extern crate futures;
