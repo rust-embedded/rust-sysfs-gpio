@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Updated nix to allow both version `0.22` or `0.23`.
+- Updated nix to version `0.23`.
 
 ## [0.6.0] - 2021-09-24
 
