@@ -45,3 +45,14 @@ impl convert::From<nix::Error> for Error {
         Error::Io(e.into())
     }
 }
+
+impl convert::From<Error> for io::Error {
+    fn from(e: Error) -> io::Error {
+        match e {
+            Error::Io(err) => err,
+            Error::Unexpected(err) => io::Error::new(io::ErrorKind::Unsupported, err),
+            Error::InvalidPath(err) => io::Error::new(io::ErrorKind::InvalidInput, err),
+            Error::Unsupported(err) => io::Error::new(io::ErrorKind::InvalidData, err),
+        }
+    }
+}

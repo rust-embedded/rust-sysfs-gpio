@@ -5,6 +5,7 @@
 ### Changed
 
 - Minimum supported Rust version updated to 1.65.0
+- The crate's `Error` type can now be converted to a `std::io::Error` using `From` / `Into`.
 
 ## [0.6.1] - 2021-11-22
 
