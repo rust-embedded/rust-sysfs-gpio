@@ -1,16 +1,17 @@
 on:
-  push:
-    branches: [ staging, trying, master ]
-  pull_request:
+  push: # Run CI for all branches except GitHub merge queue tmp branches
+    branches-ignore:
+    - "gh-readonly-queue/**"
+  pull_request: # Run CI for PRs on any branch
+  merge_group: # Run CI for the GitHub merge queue
 
-name: CI
+name: Build
 
 env:
   RUSTFLAGS: '--deny warnings'
 
 jobs:
-  ci-linux:
-    name: CI
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,24 +19,23 @@ jobs:
         FEATURES: ["", "--features=async-tokio", "--features=mio-evented"]
         TARGET:
           - aarch64-unknown-linux-gnu
+          - aarch64-unknown-linux-musl
           - arm-unknown-linux-gnueabi
+          - arm-unknown-linux-gnueabihf
           - armv7-unknown-linux-gnueabihf
           - i686-unknown-linux-gnu
           - i686-unknown-linux-musl
-          - mips-unknown-linux-gnu
-          - mips64-unknown-linux-gnuabi64
-          - mips64el-unknown-linux-gnuabi64
-          - mipsel-unknown-linux-gnu
           - powerpc-unknown-linux-gnu
-          # - powerpc64-unknown-linux-gnu
+          - powerpc64-unknown-linux-gnu
           - powerpc64le-unknown-linux-gnu
+          - riscv64gc-unknown-linux-gnu
           - s390x-unknown-linux-gnu
           - x86_64-unknown-linux-gnu
           - x86_64-unknown-linux-musl
 
         include:
           # MSRV
-          - rust: 1.46.0
+          - rust: 1.65.0
             TARGET: x86_64-unknown-linux-gnu
 
           # Test nightly but don't fail
@@ -58,37 +58,11 @@ jobs:
           command: build
           args: --target=${{ matrix.TARGET }} ${{ matrix.FEATURES }}
 
-      - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: test
-          args: --target=${{ matrix.TARGET }} ${{ matrix.FEATURES }}
-
-  ci-linux-msrv:
-    name: CI
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust: [1.46.0]
-        FEATURES: ["", "--features=async-tokio", "--features=mio-evented"]
-        TARGET:
-          - x86_64-unknown-linux-gnu
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          target: ${{ matrix.TARGET }}
-          override: true
-
-      - name: Build
+      - name: Build all features
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --target=${{ matrix.TARGET }} ${{ matrix.FEATURES }}
+          args: --target=${{ matrix.TARGET }} --all-features
 
       - name: Test
         uses: actions-rs/cargo@v1
@@ -97,29 +71,12 @@ jobs:
           command: test
           args: --target=${{ matrix.TARGET }} ${{ matrix.FEATURES }}
 
-  ci-macos:
-    name: CI
-    runs-on: macos-11
-
-    strategy:
-      matrix:
-        rust: [stable, 1.46.0]
-        TARGET: [x86_64-apple-darwin]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions-rs/toolchain@v1
+      - name: Test all features
+        uses: actions-rs/cargo@v1
         with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          target: ${{ matrix.TARGET }}
-          override: true
-
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target=${{ matrix.TARGET }}
+          use-cross: true
+          command: test
+          args: --target=${{ matrix.TARGET }} --all-features
 
   checks:
     runs-on: ubuntu-latest
@@ -152,7 +109,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.46.0
+          toolchain: 1.65.0
           components: clippy
 
       - uses: actions-rs/clippy-check@v1

@@ -2,6 +2,10 @@
 
 ## [master] - Unreleased
 
+### Changed
+
+- Minimum supported Rust version updated to 1.65.0
+
 ## [0.6.1] - 2021-11-22
 
 ### Changed
