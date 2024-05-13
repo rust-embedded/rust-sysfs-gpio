@@ -4,6 +4,8 @@
 
 ### Changed
 
+## [0.6.2] - 2024-05-13
+
 - Minimum supported Rust version updated to 1.65.0
 - The crate's `Error` type can now be converted to a `std::io::Error` using `From` / `Into`.
 
@@ -189,7 +191,8 @@
 - Initial version of the library with basic functionality
 - Support for `export`/`unexport`/`get_value`/`set_value`/`set_direction`
 
-[master]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.6.1...master
+[master]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.6.2...master
+[0.6.2]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.6.1...0.6.2
 [0.6.1]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.6.0...0.6.1
 [0.6.0]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.5.3...0.6.0
 [0.5.3]: https://github.com/rust-embedded/rust-sysfs-gpio/compare/0.5.2...0.5.3

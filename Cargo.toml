@@ -1,6 +1,6 @@
 [package]
 name = "sysfs_gpio"
-version = "0.6.1"
+version = "0.6.2"
 authors = [
     "Paul Osborne <osbpau@gmail.com>",
     "The Embedded Linux Team <embedded-linux@teams.rust-embedded.org>",
