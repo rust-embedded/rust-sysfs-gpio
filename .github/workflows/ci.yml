@@ -35,7 +35,7 @@ jobs:
 
         include:
           # MSRV
-          - rust: 1.65.0
+          - rust: 1.70.0
             TARGET: x86_64-unknown-linux-gnu
 
           # Test nightly but don't fail
@@ -109,10 +109,9 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.65.0
+          toolchain: 1.70.0
           components: clippy
 
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-

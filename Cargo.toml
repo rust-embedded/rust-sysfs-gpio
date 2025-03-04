@@ -11,7 +11,7 @@ homepage = "https://github.com/rust-embedded/rust-sysfs-gpio"
 documentation = "https://docs.rs/sysfs_gpio/"
 description = "Provides access to GPIOs using the Linux sysfs interface."
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 
 [features]
 mio-evented = ["mio"]
@@ -19,8 +19,8 @@ async-tokio = ["futures", "tokio", "mio-evented"]
 
 [dependencies]
 futures = { version = "0.3", optional = true }
-nix = "0.23"
-mio = { version = "0.8", optional = true, features = ["os-ext"]}
+nix = "0.26"
+mio = { version = "1", optional = true, features = ["os-ext"]}
 tokio = { version = "1", optional = true, features = ["net"] }
 
 [dev-dependencies]

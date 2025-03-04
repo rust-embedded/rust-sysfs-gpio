@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Updated `mio` to version `1`.
+- Updated `nix` to version `0.26`.
+- Minimum supported Rust version updated to 1.70.0
+
 ## [0.6.2] - 2024-05-13
 
 - Minimum supported Rust version updated to 1.65.0
