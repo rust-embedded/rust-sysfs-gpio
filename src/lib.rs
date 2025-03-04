@@ -26,18 +26,16 @@
 //! use std::thread::sleep;
 //! use std::time::Duration;
 //!
-//! fn main() {
-//!     let my_led = Pin::new(127); // number depends on chip, etc.
-//!     my_led.with_exported(|| {
-//!         my_led.set_direction(Direction::Out).unwrap();
-//!         loop {
-//!             my_led.set_value(0).unwrap();
-//!             sleep(Duration::from_millis(200));
-//!             my_led.set_value(1).unwrap();
-//!             sleep(Duration::from_millis(200));
-//!         }
-//!     }).unwrap();
-//! }
+//! let my_led = Pin::new(127); // number depends on chip, etc.
+//! my_led.with_exported(|| {
+//!     my_led.set_direction(Direction::Out).unwrap();
+//!     loop {
+//!         my_led.set_value(0).unwrap();
+//!         sleep(Duration::from_millis(200));
+//!         my_led.set_value(1).unwrap();
+//!         sleep(Duration::from_millis(200));
+//!     }
+//! }).unwrap();
 //! ```
 
 #![cfg_attr(feature = "async-tokio", allow(deprecated))]
@@ -247,7 +245,7 @@ impl Pin {
     /// This function will error out if the kernel does not support the GPIO
     /// sysfs interface (i.e. `/sys/class/gpio` does not exist).
     pub fn is_exported(&self) -> bool {
-        fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)).is_ok()
+        fs::metadata(format!("/sys/class/gpio/gpio{}", self.pin_num)).is_ok()
     }
 
     /// Export the GPIO
@@ -276,7 +274,7 @@ impl Pin {
     /// }
     /// ```
     pub fn export(&self) -> Result<()> {
-        if fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)).is_err() {
+        if fs::metadata(format!("/sys/class/gpio/gpio{}", self.pin_num)).is_err() {
             let mut export_file = File::create("/sys/class/gpio/export")?;
             export_file.write_all(format!("{}", self.pin_num).as_bytes())?;
         }
@@ -290,7 +288,7 @@ impl Pin {
     /// exported, it will return without error.  That is, whenever
     /// this function returns Ok, the GPIO is not exported.
     pub fn unexport(&self) -> Result<()> {
-        if fs::metadata(&format!("/sys/class/gpio/gpio{}", self.pin_num)).is_ok() {
+        if fs::metadata(format!("/sys/class/gpio/gpio{}", self.pin_num)).is_ok() {
             let mut unexport_file = File::create("/sys/class/gpio/unexport")?;
             unexport_file.write_all(format!("{}", self.pin_num).as_bytes())?;
         }
@@ -501,15 +499,15 @@ impl Pin {
 
 #[test]
 fn extract_pin_fom_path_test() {
-    let tok1 = Pin::extract_pin_from_path(&"/sys/class/gpio/gpio951");
+    let tok1 = Pin::extract_pin_from_path("/sys/class/gpio/gpio951");
     assert_eq!(951, tok1.unwrap());
-    let tok2 = Pin::extract_pin_from_path(&"/sys/CLASS/gpio/gpio951/");
+    let tok2 = Pin::extract_pin_from_path("/sys/CLASS/gpio/gpio951/");
     assert_eq!(951, tok2.unwrap());
-    let tok3 = Pin::extract_pin_from_path(&"../../devices/soc0/gpiochip3/gpio/gpio124");
+    let tok3 = Pin::extract_pin_from_path("../../devices/soc0/gpiochip3/gpio/gpio124");
     assert_eq!(124, tok3.unwrap());
-    let err1 = Pin::extract_pin_from_path(&"/sys/CLASS/gpio/gpio");
+    let err1 = Pin::extract_pin_from_path("/sys/CLASS/gpio/gpio");
     assert!(err1.is_err());
-    let err2 = Pin::extract_pin_from_path(&"/sys/class/gpio/gpioSDS");
+    let err2 = Pin::extract_pin_from_path("/sys/class/gpio/gpioSDS");
     assert!(err2.is_err());
 }
 #[cfg(not(target_os = "wasi"))]
@@ -532,7 +530,7 @@ impl PinPoller {
     /// Create a new PinPoller for the provided pin number
     #[cfg(any(target_os = "linux", target_os = "android"))]
     pub fn new(pin_num: u64) -> Result<PinPoller> {
-        let devfile: File = File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num))?;
+        let devfile: File = File::open(format!("/sys/class/gpio/gpio{}/value", pin_num))?;
         let devfile_fd = devfile.as_raw_fd();
         let epoll_fd = epoll_create()?;
         let mut event = EpollEvent::new(EpollFlags::EPOLLPRI | EpollFlags::EPOLLET, 0u64);
@@ -609,7 +607,7 @@ pub struct AsyncPinPoller {
 #[cfg(feature = "mio-evented")]
 impl AsyncPinPoller {
     fn new(pin_num: u64) -> Result<Self> {
-        let devfile = File::open(&format!("/sys/class/gpio/gpio{}/value", pin_num))?;
+        let devfile = File::open(format!("/sys/class/gpio/gpio{}/value", pin_num))?;
         Ok(AsyncPinPoller { devfile })
     }
 }
