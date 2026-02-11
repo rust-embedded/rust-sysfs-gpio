@@ -12,6 +12,8 @@ documentation = "https://docs.rs/sysfs_gpio/"
 description = "Provides access to GPIOs using the Linux sysfs interface."
 readme = "README.md"
 edition = "2021"
+rust-version = "1.84"
+resolver = "3"
 
 [features]
 mio-evented = ["mio"]
