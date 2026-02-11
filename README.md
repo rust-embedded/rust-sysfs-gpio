@@ -3,7 +3,7 @@ sysfs_gpio
 
 [![Build Status](https://github.com/rust-embedded/rust-sysfs-gpio/workflows/CI/badge.svg)](https://github.com/rust-embedded/rust-sysfs-gpio/actions)
 [![Version](https://img.shields.io/crates/v/sysfs-gpio.svg)](https://crates.io/crates/sysfs-gpio)
-![Minimum Supported Rust Version](https://img.shields.io/badge/rustc-1.70+-blue.svg)
+![Minimum Supported Rust Version](https://img.shields.io/badge/rustc-1.84+-blue.svg)
 [![License](https://img.shields.io/crates/l/sysfs-gpio.svg)](https://github.com/rust-embedded/rust-sysfs-gpio/blob/master/README.md#license)
 
 - [API Documentation](https://docs.rs/sysfs_gpio)
@@ -85,7 +85,7 @@ The following features are planned for the library:
 
 ## Minimum Supported Rust Version (MSRV)
 
-This crate is guaranteed to compile on stable Rust 1.70.0 and up.  It *might*
+This crate is guaranteed to compile on stable Rust 1.84.0 and up.  It *might*
 compile with older versions but that may change in any new patch release.
 
 ## Cross Compiling
