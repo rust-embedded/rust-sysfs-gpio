@@ -21,8 +21,8 @@ async-tokio = ["futures", "tokio", "mio-evented"]
 
 [dependencies]
 futures = { version = "0.3", optional = true }
-nix = "0.26"
-mio = { version = "1", optional = true, features = ["os-ext"]}
+nix = { version = "0.31", features = ["event"] }
+mio = { version = "1", optional = true, features = ["os-ext"] }
 tokio = { version = "1", optional = true, features = ["net"] }
 
 [dev-dependencies]
