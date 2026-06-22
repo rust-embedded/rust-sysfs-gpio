@@ -450,7 +450,7 @@ impl Pin {
     ///
     /// This pin poller object will register an interrupt with the
     /// kernel and allow you to poll() on it and receive notifications
-    /// that an interrupt has occured with minimal delay.
+    /// that an interrupt has occurred with minimal delay.
     #[cfg(not(target_os = "wasi"))]
     pub fn get_poller(&self) -> Result<PinPoller> {
         PinPoller::new(self.pin_num)
